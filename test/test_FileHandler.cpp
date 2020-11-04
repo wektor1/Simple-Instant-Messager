@@ -1,36 +1,49 @@
 #include "FileHandler.h"
 #include "HandlersExceptions.h"
 #include <filesystem>
+#include <fstream>
 #include <gtest/gtest.h>
 
 namespace fs = std::filesystem;
 
-TEST(FileHandlerTest, AssertEmptyQueueAtStart) {
+class FileHandlerTest : public ::testing::Test {
+protected:
+  void SetUp() override {
+    std::ofstream testFile(pathToTestFile);
+    testFile.close();
+  }
+
+  void TearDown() override { fs::remove(pathToTestFile); }
+
+  fs::path pathToTestFile = "../testfile.txt";
+};
+
+TEST_F(FileHandlerTest, AssertEmptyQueueAtStart) {
   FileHandler fileHndlr;
   ASSERT_FALSE(fileHndlr.fileInQueue());
 }
 
-TEST(FileHandlerTest, AssertAddingFilesToQueue) {
+TEST_F(FileHandlerTest, AssertAddingFilesToQueue) {
   FileHandler fileHndlr;
-  fileHndlr.fileToSend("/test/file.txt");
+  fileHndlr.fileToSend("../testfile.txt");
   ASSERT_TRUE(fileHndlr.fileInQueue());
 }
 
-TEST(FileHandlerTest, AssertProcessFirstToRemoveFirstFile) {
+TEST_F(FileHandlerTest, AssertProcessFirstToRemoveFirstFile) {
   FileHandler fileHndlr;
-  fileHndlr.fileToSend("/test/file.txt");
+  fileHndlr.fileToSend("../testfile.txt");
   fileHndlr.processFirst();
   ASSERT_FALSE(fileHndlr.fileInQueue());
 }
 
-TEST(FileHandlerTest, AssertThrowIfProcessingEmptyQueue) {
+TEST_F(FileHandlerTest, AssertThrowIfProcessingEmptyQueue) {
   FileHandler fileHndlr;
   ASSERT_THROW(fileHndlr.processFirst(), EmptyQueueException);
 }
 
-TEST(FileHandlerTest, AssertSameFileProcessing) {
+TEST_F(FileHandlerTest, AssertSameFileProcessing) {
   FileHandler fileHndlr;
-  fs::path file = "/test/file.txt";
+  fs::path file = "../testfile.txt";
   fileHndlr.fileToSend(file);
   auto processed_file = fileHndlr.processFirst();
   ASSERT_EQ(processed_file, file);
