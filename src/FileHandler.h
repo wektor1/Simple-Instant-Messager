@@ -1,4 +1,5 @@
-#include <Handler.h>
+#include "Handler_templ.h"
+#include "Handler_templ.cpp"
 #include <filesystem>
 #include <queue>
 

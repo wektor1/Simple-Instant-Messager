@@ -1,15 +1,5 @@
+#include "Handler_templ.h"
 #include "HandlersExceptions.h"
-#include <queue>
-
-template <typename T> class Handler {
-public:
-  bool objectInQueue() const;
-  void objectToSend(const T obj);
-  T processFirst();
-
-private:
-  std::queue<T> m_queue;
-};
 
 template <typename T> bool Handler<T>::objectInQueue() const {
   return !m_queue.empty();
