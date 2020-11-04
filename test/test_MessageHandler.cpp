@@ -1,3 +1,4 @@
+#include "HandlersExceptions.h"
 #include "MessageHandler.h"
 #include <gtest/gtest.h>
 #include <string>
@@ -20,12 +21,12 @@ TEST(MessageHandlerTest, AssertProcessFirstToRemoveFirstMess) {
   ASSERT_FALSE(messHndlr.messageInQueue());
 }
 
-TEST(MessageHandlerTest, AssertThrowIfProcessingEmptyQueue){
+TEST(MessageHandlerTest, AssertThrowIfProcessingEmptyQueue) {
   MessageHandler messHndlr;
   ASSERT_THROW(messHndlr.processFirst(), EmptyQueueException);
 }
 
-TEST(MessageHandlerTest, AssertSameMessageProcessing){
+TEST(MessageHandlerTest, AssertSameMessageProcessing) {
   MessageHandler messHndlr;
   std::string mess = "New mess";
   messHndlr.messageToSend(mess);

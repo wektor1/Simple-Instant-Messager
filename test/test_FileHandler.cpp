@@ -1,10 +1,11 @@
 #include "FileHandler.h"
-#include <gtest/gtest.h>
+#include "HandlersExceptions.h"
 #include <filesystem>
+#include <gtest/gtest.h>
 
 namespace fs = std::filesystem;
 
-TEST(FileHandlerTest, AssertEmptyQueueAtStart){
+TEST(FileHandlerTest, AssertEmptyQueueAtStart) {
   FileHandler fileHndlr;
   ASSERT_FALSE(fileHndlr.fileInQueue());
 }
@@ -22,12 +23,12 @@ TEST(FileHandlerTest, AssertProcessFirstToRemoveFirstFile) {
   ASSERT_FALSE(fileHndlr.fileInQueue());
 }
 
-TEST(FileHandlerTest, AssertThrowIfProcessingEmptyQueue){
+TEST(FileHandlerTest, AssertThrowIfProcessingEmptyQueue) {
   FileHandler fileHndlr;
   ASSERT_THROW(fileHndlr.processFirst(), EmptyQueueException);
 }
 
-TEST(FileHandlerTest, AssertSameFileProcessing){
+TEST(FileHandlerTest, AssertSameFileProcessing) {
   FileHandler fileHndlr;
   fs::path file = "/test/file.txt";
   fileHndlr.fileToSend(file);
