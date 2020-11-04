@@ -1,11 +1,9 @@
-#ifndef FILEHANDLER_H
-#define FILEHANDLER_H
+#include <queue>
+#include <filesystem>
+#include <Handler.h>
 
-
-class FileHandler
-{
+using PathHandler = Handler<std::filesystem::path>;
+class FileHandler : public PathHandler {
 public:
-  FileHandler();
+  bool filesInQueue() const;
 };
-
-#endif // FILEHANDLER_H

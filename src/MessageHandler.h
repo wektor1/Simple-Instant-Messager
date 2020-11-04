@@ -1,12 +1,11 @@
+#include "Handler.h"
 #include <queue>
 #include <string>
 
-class MessageHandler {
+using StringHandler = Handler<std::string>;
+
+class MessageHandler : public StringHandler {
 public:
   bool messageInQueue() const;
   void messageToSend(const std::string mess);
-  std::string processFirst();
-
-private:
-  std::queue<std::string> m_messagesQueue;
 };

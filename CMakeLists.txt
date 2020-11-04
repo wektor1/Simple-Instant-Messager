@@ -44,6 +44,8 @@ set(CMAKE_CXX_COMPILER "g++")
 project (InstantMessenger)
 
 set(SRC_LIST
+    src/Handler.cpp
+    src/Handler.h
     src/MessageHandler.h
     src/MessageHandler.cpp
     src/HandlersExceptions.h

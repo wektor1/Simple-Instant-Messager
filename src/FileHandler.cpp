@@ -1,6 +1,3 @@
-#include "FileHandler.h"
+#include <FileHandler.h>
 
-FileHandler::FileHandler()
-{
-
-}
+bool FileHandler::filesInQueue() const { return objectInQueue(); }
