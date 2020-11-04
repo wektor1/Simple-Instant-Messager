@@ -1,9 +1,10 @@
-#include <queue>
-#include <filesystem>
 #include <Handler.h>
+#include <filesystem>
+#include <queue>
 
 using PathHandler = Handler<std::filesystem::path>;
 class FileHandler : public PathHandler {
 public:
-  bool filesInQueue() const;
+  bool fileInQueue() const;
+  void fileToSend(const std::filesystem::path);
 };

@@ -1,3 +1,7 @@
 #include <FileHandler.h>
 
-bool FileHandler::filesInQueue() const { return objectInQueue(); }
+bool FileHandler::fileInQueue() const { return objectInQueue(); }
+
+void FileHandler::fileToSend(const std::filesystem::path filePath) {
+  objectToSend(filePath);
+}
