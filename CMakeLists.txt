@@ -46,6 +46,9 @@ project (InstantMessenger)
 set(SRC_LIST
     src/MessageHandler.h
     src/MessageHandler.cpp
+    src/HandlersExceptions.h
+    src/FileHandler.h
+    src/FileHandler.cpp
 )
 
 include_directories(src)
@@ -61,6 +64,7 @@ endif (UNIX)
 set(TEST_SRC_LIST
     test/test_main.cpp
     test/test_MessageHandler.cpp
+    test/test_FileHandler.cpp
 )
 
 link_libraries(gtest)
