@@ -1,6 +1,8 @@
 #include "Handler_templ.h"
 #include "HandlersExceptions.h"
 
+template <typename T> Handler<T>::~Handler() {}
+
 template <typename T> bool Handler<T>::objectInQueue() const {
   return !m_queue.empty();
 }
