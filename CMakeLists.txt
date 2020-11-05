@@ -53,22 +53,38 @@ set(HANDLERS_SRC_LIST
     src/FileHandler.cpp
 )
 
+set(COMUNICATION_SRC_LIST
+    src/MessageReciveServer.h
+    src/MessageReciveServer.cpp
+    src/BaseServer.cpp
+    src/BaseServer.h
+)
+
+find_package(Boost COMPONENTS date_time)
+
 include_directories(src)
 add_library(Handlers-lib ${HANDLERS_SRC_LIST})
+add_library(Comunication-lib ${COMUNICATION_SRC_LIST})
 add_executable(${PROJECT_NAME} src/main.cpp)
 
 if (UNIX)
         target_link_libraries(${PROJECT_NAME} Handlers-lib pthread)
+        target_link_libraries(${PROJECT_NAME} Comunication-lib pthread)
+        target_link_libraries(Comunication-lib PUBLIC ${Boost_SYSTEM_LIBRARY} pthread)
 else (UNIX)
         target_link_libraries(${PROJECT_NAME} Handlers-lib)
+        target_link_libraries(${PROJECT_NAME} Comunication-lib)
+        target_link_libraries(Comunication-lib PUBLIC ${Boost_SYSTEM_LIBRARY})
 endif (UNIX)
 
 set(TEST_SRC_LIST
     test/test_main.cpp
     test/test_MessageHandler.cpp
     test/test_FileHandler.cpp
+    test/test_MessageReciveServer.cpp
 )
 
 link_libraries(gtest)
 add_executable(${PROJECT_NAME}-ut ${TEST_SRC_LIST})
 target_link_libraries(${PROJECT_NAME}-ut Handlers-lib)
+target_link_libraries(${PROJECT_NAME}-ut Comunication-lib)
