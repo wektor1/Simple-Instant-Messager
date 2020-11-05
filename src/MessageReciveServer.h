@@ -10,5 +10,5 @@ class MessageReciveServer : public BaseServer {
 public:
   MessageReciveServer(const short &readPort);
   void readMessages();
-  std::string getData();
+  std::string getData(boost::asio::ip::tcp::socket& serverSocket);
 };

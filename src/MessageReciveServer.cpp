@@ -6,15 +6,15 @@ MessageReciveServer::MessageReciveServer(const short &readPort)
 void MessageReciveServer::readMessages() {
   std::string response;
   while (true) {
-    response = getData();
+    response = getData(getSocket());
     if (response == STOP_CODE)
       break;
   }
 }
 
-std::string MessageReciveServer::getData() {
+std::string MessageReciveServer::getData(boost::asio::ip::tcp::socket& serverSocket) {
   boost::asio::streambuf buffer;
-  boost::asio::read_until(getSocket(), buffer, MESSAGE_END);
+  boost::asio::read_until(serverSocket, buffer, MESSAGE_END);
   std::string data = boost::asio::buffer_cast<const char *>(buffer.data());
   data.pop_back();
   return data;
