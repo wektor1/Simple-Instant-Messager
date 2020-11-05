@@ -58,6 +58,8 @@ set(COMUNICATION_SRC_LIST
     src/MessageReciveServer.cpp
     src/BaseServer.cpp
     src/BaseServer.h
+    src/BaseClient.cpp
+    src/BaseClient.h
 )
 
 find_package(Boost COMPONENTS date_time)
