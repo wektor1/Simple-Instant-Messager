@@ -3,11 +3,11 @@
 #include <iostream>
 #include <string>
 
-class BaseServer
-{
+class BaseServer {
 public:
   BaseServer(const short &readPort);
-  boost::asio::ip::tcp::socket& getSocket();
+  virtual ~BaseServer();
+  boost::asio::ip::tcp::socket &getSocket();
 
 private:
   boost::asio::io_service m_ioService;

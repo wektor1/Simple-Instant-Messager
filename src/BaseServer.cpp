@@ -8,4 +8,6 @@ BaseServer::BaseServer(const short &readPort)
   m_acceptorServer.accept(m_serverSocket);
 }
 
+virtual BaseServer::~BaseServer() {}
+
 boost::asio::ip::tcp::socket &BaseServer::getSocket() { return m_serverSocket; }
