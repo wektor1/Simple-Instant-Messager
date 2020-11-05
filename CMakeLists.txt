@@ -43,7 +43,7 @@ set(CMAKE_CXX_COMPILER "g++")
 
 project (InstantMessenger)
 
-set(SRC_LIST
+set(HANDLERS_SRC_LIST
     src/Handler_templ.cpp
     src/Handler_templ.h
     src/MessageHandler.h
@@ -54,13 +54,13 @@ set(SRC_LIST
 )
 
 include_directories(src)
-add_library(${PROJECT_NAME}-lib ${SRC_LIST})
+add_library(Handlers-lib ${HANDLERS_SRC_LIST})
 add_executable(${PROJECT_NAME} src/main.cpp)
 
 if (UNIX)
-        target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-lib pthread)
+        target_link_libraries(${PROJECT_NAME} Handlers-lib pthread)
 else (UNIX)
-        target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-lib)
+        target_link_libraries(${PROJECT_NAME} Handlers-lib)
 endif (UNIX)
 
 set(TEST_SRC_LIST
@@ -71,4 +71,4 @@ set(TEST_SRC_LIST
 
 link_libraries(gtest)
 add_executable(${PROJECT_NAME}-ut ${TEST_SRC_LIST})
-target_link_libraries(${PROJECT_NAME}-ut ${PROJECT_NAME}-lib)
+target_link_libraries(${PROJECT_NAME}-ut Handlers-lib)
