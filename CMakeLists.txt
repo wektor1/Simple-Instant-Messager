@@ -1,92 +1,12 @@
-# CMakeList.txt : Top-level CMake project file, do global configuration
-# and include sub-projects here.
-
 cmake_minimum_required (VERSION 3.8)
 
-# Download and unpack googletest at configure time
-configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
-execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-  RESULT_VARIABLE result
-  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/googletest-download )
-if(result)
-  message(FATAL_ERROR "CMake step for googletest failed: ${result}")
-endif()
-execute_process(COMMAND ${CMAKE_COMMAND} --build .
-  RESULT_VARIABLE result
-  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/googletest-download )
-if(result)
-  message(FATAL_ERROR "Build step for googletest failed: ${result}")
-endif()
-
-# Prevent overriding the parent project's compiler/linker
-# settings on Windows
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
-# Add googletest directly to our build. This defines
-# the gtest and gtest_main targets.
-add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
-                 ${CMAKE_BINARY_DIR}/googletest-build
-                 EXCLUDE_FROM_ALL)
-
-# The gtest/gtest_main targets carry header search path
-# dependencies automatically when using CMake 2.8.11 or
-# later. Otherwise we have to add them here ourselves.
-if (CMAKE_VERSION VERSION_LESS 2.8.11)
-  include_directories("${gtest_SOURCE_DIR}/include")
-endif()
+include(CMakeLists.txt.google)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_COMPILER "g++")
 
-#set(CMAKE_CXX_FLAGS "-g -O0")
-
 project (InstantMessenger)
 
-set(HANDLERS_SRC_LIST
-    src/Handler_templ.cpp
-    src/Handler_templ.h
-    src/MessageHandler.h
-    src/MessageHandler.cpp
-    src/HandlersExceptions.h
-    src/FileHandler.h
-    src/FileHandler.cpp
-)
-
-set(COMUNICATION_SRC_LIST
-    src/MessageReciveServer.h
-    src/MessageReciveServer.cpp
-    src/ServerInterface.h
-    src/ClientInterface.h
-    src/MessageSendClient.cpp
-    src/MessageSendClient.h
-)
-
-find_package(Boost COMPONENTS date_time)
-
-include_directories(src)
-add_library(Handlers-lib ${HANDLERS_SRC_LIST})
-add_library(Comunication-lib ${COMUNICATION_SRC_LIST})
-add_executable(${PROJECT_NAME} src/main.cpp)
-
-if (UNIX)
-        target_link_libraries(${PROJECT_NAME} Handlers-lib pthread)
-        target_link_libraries(${PROJECT_NAME} Comunication-lib pthread)
-        target_link_libraries(Comunication-lib PUBLIC ${Boost_SYSTEM_LIBRARY} pthread)
-else (UNIX)
-        target_link_libraries(${PROJECT_NAME} Handlers-lib)
-        target_link_libraries(${PROJECT_NAME} Comunication-lib)
-        target_link_libraries(Comunication-lib PUBLIC ${Boost_SYSTEM_LIBRARY})
-endif (UNIX)
-
-set(TEST_SRC_LIST
-    test/test_main.cpp
-    test/test_MessageHandler.cpp
-    test/test_FileHandler.cpp
-    test/test_MessageReciveServer.cpp
-)
-
-link_libraries(gtest)
-add_executable(${PROJECT_NAME}-ut ${TEST_SRC_LIST})
-target_link_libraries(${PROJECT_NAME}-ut Handlers-lib)
-target_link_libraries(${PROJECT_NAME}-ut Comunication-lib)
+add_subdirectory(src)
+add_subdirectory(test)
