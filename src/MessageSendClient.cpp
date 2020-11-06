@@ -2,15 +2,24 @@
 
 MessageSendClient::MessageSendClient(const std::string &hostAddress,
                                      const short &hostPort)
-    : BaseClient(hostAddress, hostPort) {}
+    : m_ioService(), m_clientSocket(m_ioService), m_hostAddress(hostAddress),
+      m_hostPort(hostPort) {}
 
-void MessageSendClient::prepareData(std::ostream &messOutput,
-                                    const std::string &message) {
-  sendMessage(getSocket(), boost::asio::buffer(message + MESSAGE_END));
+void MessageSendClient::connect() {
+  m_clientSocket.connect(boost::asio::ip::tcp::endpoint(
+      boost::asio::ip::address::from_string(m_hostAddress), m_hostPort));
+}
+
+void MessageSendClient::send(std::ostream &messOutput,
+                             const std::string &message) {
+  sendMessage(boost::asio::buffer(message + MESSAGE_END));
   messOutput << message;
 }
 
-void MessageSendClient::sendMessage(boost::asio::ip::tcp::socket &hostSocket,
-                                    const boost::asio::const_buffer &buff) {
-  boost::asio::write(hostSocket, buff);
+void MessageSendClient::sendMessage(const boost::asio::const_buffer &buff) {
+  boost::asio::write(m_clientSocket, buff);
+}
+
+void MessageSendClient::disconnect() {
+  sendMessage(boost::asio::buffer(STOP_CODE));
 }

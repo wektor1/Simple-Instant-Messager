@@ -1,14 +1,22 @@
-#include "BaseClient.h"
+#include "ClientInterface.h"
 #include <boost/asio.hpp>
 #include <ostream>
 #include <string>
 
-const auto MESSAGE_END = "\n";
+const std::string STOP_CODE = ">exit<";
+const std::string MESSAGE_END = "\n";
 
-class MessageSendClient : public BaseClient {
+class MessageSendClient : public ClientInterface {
 public:
   MessageSendClient(const std::string &hostAddress, const short &hostPort);
-  void prepareData(std::ostream &messOutput, const std::string &message);
-  void sendMessage(boost::asio::ip::tcp::socket &hostSocket,
-                   const boost::asio::const_buffer &buff);
+  void connect() override;
+  void send(std::ostream &messOutput, const std::string &message) override;
+  void sendMessage(const boost::asio::const_buffer &buff);
+  void disconnect() override;
+
+private:
+  boost::asio::io_service m_ioService;
+  boost::asio::ip::tcp::socket m_clientSocket;
+  std::string m_hostAddress;
+  short m_hostPort;
 };

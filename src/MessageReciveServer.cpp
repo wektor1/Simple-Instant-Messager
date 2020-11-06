@@ -1,22 +1,33 @@
 #include "MessageReciveServer.h"
+#include <stdexcept>
 
 MessageReciveServer::MessageReciveServer(const short &readPort)
-    : BaseServer(readPort) {}
+    : m_ioService(),
+      m_acceptorServer(m_ioService, boost::asio::ip::tcp::endpoint(
+                                        boost::asio::ip::tcp::v4(), readPort)),
+      m_serverSocket(m_ioService) {}
 
-void MessageReciveServer::readMessages(std::ostream &messOutput) {
+void MessageReciveServer::acceptConnection() {
+  m_acceptorServer.accept(m_serverSocket);
+}
+
+void MessageReciveServer::read(std::ostream &messOutput) {
   std::string response;
   while (true) {
-    response = getData(getSocket());
+    response = getMessage();
     if (response == STOP_CODE)
-      break;
+      disconnected();
     messOutput << response;
   }
 }
 
-std::string
-MessageReciveServer::getData(boost::asio::ip::tcp::socket &serverSocket) {
+void MessageReciveServer::disconnected() {
+  throw std::runtime_error("Connection ended");
+}
+
+std::string MessageReciveServer::getMessage() {
   boost::asio::streambuf buffer;
-  boost::asio::read_until(serverSocket, buffer, MESSAGE_END);
+  boost::asio::read_until(m_serverSocket, buffer, MESSAGE_END);
   std::string data = boost::asio::buffer_cast<const char *>(buffer.data());
   data.pop_back();
   return data;

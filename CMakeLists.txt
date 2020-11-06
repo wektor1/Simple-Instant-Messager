@@ -56,10 +56,8 @@ set(HANDLERS_SRC_LIST
 set(COMUNICATION_SRC_LIST
     src/MessageReciveServer.h
     src/MessageReciveServer.cpp
-    src/BaseServer.cpp
-    src/BaseServer.h
-    src/BaseClient.cpp
-    src/BaseClient.h
+    src/ServerInterface.h
+    src/ClientInterface.h
     src/MessageSendClient.cpp
     src/MessageSendClient.h
 )
