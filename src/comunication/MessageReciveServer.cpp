@@ -1,5 +1,6 @@
 #include "MessageReciveServer.h"
-#include <stdexcept>
+#include "ComunicationExceptions.h"
+#include "MessagesDefinitions.h"
 
 MessageReciveServer::MessageReciveServer(const short &readPort)
     : m_ioService(),
@@ -22,7 +23,7 @@ void MessageReciveServer::read(std::ostream &messOutput) {
 }
 
 void MessageReciveServer::disconnected() {
-  throw std::runtime_error("Connection ended");
+  throw ConnectionLostException("Client ended conversation");
 }
 
 std::string MessageReciveServer::getMessage() {

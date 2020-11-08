@@ -3,9 +3,6 @@
 #include <ostream>
 #include <string>
 
-const std::string STOP_CODE = ">exit<";
-const std::string MESSAGE_END = "\n";
-
 class MessageReciveServer : public ServerInterface {
 public:
   MessageReciveServer(const short &readPort);

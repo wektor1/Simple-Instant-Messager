@@ -3,9 +3,6 @@
 #include <ostream>
 #include <string>
 
-const std::string STOP_CODE = ">exit<";
-const std::string MESSAGE_END = "\n";
-
 class MessageSendClient : public ClientInterface {
 public:
   MessageSendClient(const std::string &hostAddress, const short &hostPort);

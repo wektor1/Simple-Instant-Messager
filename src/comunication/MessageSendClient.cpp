@@ -1,4 +1,5 @@
 #include "MessageSendClient.h"
+#include "MessagesDefinitions.h"
 
 MessageSendClient::MessageSendClient(const std::string &hostAddress,
                                      const short &hostPort)

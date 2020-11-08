@@ -31,7 +31,7 @@ TEST_F(FileHandlerTest, AssertAddingFilesToQueue) {
 
 TEST_F(FileHandlerTest, AssertThrowIfFilesNotExist) {
   FileHandler fileHndlr;
-  ASSERT_THROW(fileHndlr.fileToSend("../testfile1.txt"), FileNotFound);
+  ASSERT_THROW(fileHndlr.fileToSend("../testfile1.txt"), FileNotFoundException);
 }
 
 TEST_F(FileHandlerTest, AssertProcessFirstToRemoveFirstFile) {
