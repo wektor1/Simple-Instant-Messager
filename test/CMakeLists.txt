@@ -5,6 +5,8 @@ set(test_sources
     test_MessageHandler.cpp
     MockClientInterface.cpp
     MockServerInterface.cpp
+    MockMessageHandlerInterface.cpp
+    test_MessagesSenderManager.cpp
 )
 
 add_executable(${PROJECT_NAME}-ut ${test_sources})
@@ -14,3 +16,4 @@ target_link_libraries(${PROJECT_NAME}-ut gtest_main)
 target_link_libraries(${PROJECT_NAME}-ut gmock_main)
 target_link_libraries(${PROJECT_NAME}-ut Handlers-lib)
 target_link_libraries(${PROJECT_NAME}-ut Comunication-lib)
+target_link_libraries(${PROJECT_NAME}-ut Managers-lib)
