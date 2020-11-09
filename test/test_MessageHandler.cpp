@@ -10,26 +10,26 @@ TEST(MessageHandlerTest, AssertEmptyQueueAtStart) {
 
 TEST(MessageHandlerTest, AssertAddingMessagesToQueue) {
   MessageHandler messHndlr;
-  messHndlr.messageToSend("New Mess");
+  messHndlr.messageToQueue("New Mess");
   ASSERT_TRUE(messHndlr.messageInQueue());
 }
 
 TEST(MessageHandlerTest, AssertProcessFirstToRemoveFirstMess) {
   MessageHandler messHndlr;
-  messHndlr.messageToSend("New Mess");
-  messHndlr.processFirst();
+  messHndlr.messageToQueue("New Mess");
+  messHndlr.messageToSend();
   ASSERT_FALSE(messHndlr.messageInQueue());
 }
 
 TEST(MessageHandlerTest, AssertThrowIfProcessingEmptyQueue) {
   MessageHandler messHndlr;
-  ASSERT_THROW(messHndlr.processFirst(), EmptyQueueException);
+  ASSERT_THROW(messHndlr.messageToSend(), EmptyQueueException);
 }
 
 TEST(MessageHandlerTest, AssertSameMessageProcessing) {
   MessageHandler messHndlr;
   std::string mess = "New mess";
-  messHndlr.messageToSend(mess);
-  auto processed_mess = messHndlr.processFirst();
+  messHndlr.messageToQueue(mess);
+  auto processed_mess = messHndlr.messageToSend();
   ASSERT_EQ(processed_mess, mess);
 }

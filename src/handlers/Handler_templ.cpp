@@ -7,7 +7,7 @@ template <typename T> bool Handler<T>::objectInQueue() const {
   return !m_queue.empty();
 }
 
-template <typename T> void Handler<T>::objectToSend(const T obj) {
+template <typename T> void Handler<T>::objectToQueue(const T obj) {
   m_queue.push(obj);
 }
 

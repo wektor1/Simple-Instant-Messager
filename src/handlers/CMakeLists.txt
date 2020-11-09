@@ -12,6 +12,8 @@ set(handlers_sources
 )
 set(handlers_includes
     include/HandlersExceptions.h
+    include/FileHandlerInterface.h
+    include/MessageHandlerInterface.h
 )
 
 add_library(Handlers-lib ${handlers_headers} ${handlers_sources} ${handlers_includes})

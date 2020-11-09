@@ -2,6 +2,8 @@
 
 bool MessageHandler::messageInQueue() const { return objectInQueue(); }
 
-void MessageHandler::messageToSend(const std::string mess) {
-  objectToSend(mess);
+void MessageHandler::messageToQueue(const std::string mess) {
+  objectToQueue(mess);
 }
+
+std::string MessageHandler::messageToSend() { return processFirst(); }

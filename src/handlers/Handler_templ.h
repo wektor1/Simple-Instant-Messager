@@ -7,7 +7,7 @@ template <typename T> class Handler {
 public:
   virtual ~Handler();
   bool objectInQueue() const;
-  void objectToSend(const T obj);
+  void objectToQueue(const T obj);
   T processFirst();
 
 private:

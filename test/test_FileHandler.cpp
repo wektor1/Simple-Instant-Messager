@@ -25,31 +25,31 @@ TEST_F(FileHandlerTest, AssertEmptyQueueAtStart) {
 
 TEST_F(FileHandlerTest, AssertAddingFilesToQueue) {
   FileHandler fileHndlr;
-  fileHndlr.fileToSend("../testfile.txt");
+  fileHndlr.fileToQueue("../testfile.txt");
   ASSERT_TRUE(fileHndlr.fileInQueue());
 }
 
 TEST_F(FileHandlerTest, AssertThrowIfFilesNotExist) {
   FileHandler fileHndlr;
-  ASSERT_THROW(fileHndlr.fileToSend("../testfile1.txt"), FileNotFoundException);
+  ASSERT_THROW(fileHndlr.fileToQueue("../testfile1.txt"), FileNotFoundException);
 }
 
 TEST_F(FileHandlerTest, AssertProcessFirstToRemoveFirstFile) {
   FileHandler fileHndlr;
-  fileHndlr.fileToSend("../testfile.txt");
-  fileHndlr.processFirst();
+  fileHndlr.fileToQueue("../testfile.txt");
+  fileHndlr.fileToSend();
   ASSERT_FALSE(fileHndlr.fileInQueue());
 }
 
 TEST_F(FileHandlerTest, AssertThrowIfProcessingEmptyQueue) {
   FileHandler fileHndlr;
-  ASSERT_THROW(fileHndlr.processFirst(), EmptyQueueException);
+  ASSERT_THROW(fileHndlr.fileToSend(), EmptyQueueException);
 }
 
 TEST_F(FileHandlerTest, AssertSameFileProcessing) {
   FileHandler fileHndlr;
   fs::path file = "../testfile.txt";
-  fileHndlr.fileToSend(file);
-  auto processed_file = fileHndlr.processFirst();
+  fileHndlr.fileToQueue(file);
+  auto processed_file = fileHndlr.fileToSend();
   ASSERT_EQ(processed_file, file);
 }
