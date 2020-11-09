@@ -9,6 +9,7 @@ MessagesSenderManager::MessagesSenderManager(
       m_messageHandler(std::move(messageHandler)) {}
 
 void MessagesSenderManager::createNewMessage(const std::string mess) {
+  std::lock_guard<std::mutex> lockQueue(messHandlerMutex);
   m_messageHandler->messageToQueue(mess);
 }
 bool MessagesSenderManager::beginConnection() {

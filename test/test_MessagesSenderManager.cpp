@@ -26,3 +26,5 @@ TEST(MessagesSenderManagerTest, AssertConnectionEstablishedWithProperData){
   MessagesSenderManager mgr(cltInt, msgHndl);
   ASSERT_TRUE(mgr.beginConnection());
 }
+
+
