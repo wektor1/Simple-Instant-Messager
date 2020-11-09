@@ -11,10 +11,8 @@ void MessageSendClient::connect() {
       boost::asio::ip::address::from_string(m_hostAddress), m_hostPort));
 }
 
-void MessageSendClient::send(std::ostream &messOutput,
-                             const std::string &message) {
+void MessageSendClient::send(const std::string &message) {
   sendMessage(boost::asio::buffer(message + MESSAGE_END));
-  messOutput << message;
 }
 
 void MessageSendClient::sendMessage(const boost::asio::const_buffer &buff) {

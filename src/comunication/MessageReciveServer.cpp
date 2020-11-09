@@ -12,14 +12,12 @@ void MessageReciveServer::acceptConnection() {
   m_acceptorServer.accept(m_serverSocket);
 }
 
-void MessageReciveServer::read(std::ostream &messOutput) {
+std::string MessageReciveServer::read() {
   std::string response;
-  while (true) {
-    response = getMessage();
-    if (response == STOP_CODE)
-      disconnected();
-    messOutput << response;
-  }
+  response = getMessage();
+  if (response == STOP_CODE)
+    disconnected();
+  return response;
 }
 
 void MessageReciveServer::disconnected() {

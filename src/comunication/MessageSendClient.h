@@ -7,7 +7,7 @@ class MessageSendClient : public ClientInterface {
 public:
   MessageSendClient(const std::string &hostAddress, const short &hostPort);
   void connect() override;
-  void send(std::ostream &messOutput, const std::string &message) override;
+  void send(const std::string &message) override;
   void sendMessage(const boost::asio::const_buffer &buff);
   void disconnect() override;
 

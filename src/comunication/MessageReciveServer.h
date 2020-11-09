@@ -7,7 +7,7 @@ class MessageReciveServer : public ServerInterface {
 public:
   MessageReciveServer(const short &readPort);
   void acceptConnection() override;
-  void read(std::ostream &messOutput) override;
+  std::string read() override;
   void disconnected() override;
   std::string getMessage();
 

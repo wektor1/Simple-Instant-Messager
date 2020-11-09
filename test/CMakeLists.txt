@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.8)
 
-file(GLOB_RECURSE test_sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+set(test_sources
+    test_FileHandler.cpp
+    test_MessageHandler.cpp
+    MockClientInterface.cpp
+    MockServerInterface.cpp
+)
 
 add_executable(${PROJECT_NAME}-ut ${test_sources})
 
