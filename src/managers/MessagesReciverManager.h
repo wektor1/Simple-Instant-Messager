@@ -2,6 +2,7 @@
 #include "ServerInterface.h"
 #include <memory>
 #include <mutex>
+#include <string>
 
 class MessagesReciverManager {
 public:
@@ -9,9 +10,12 @@ public:
                          MessageHandlerInterface *messageHandler) noexcept;
   bool acceptConnection();
   void continuousBufferRead();
+  void endConnection();
+  std::string giveLastMessage();
 
 private:
   std::unique_ptr<ServerInterface> m_messageReciver;
   std::unique_ptr<MessageHandlerInterface> m_messageHandler;
+  bool m_connectionValid;
   std::mutex m_messHandlerMutex;
 };

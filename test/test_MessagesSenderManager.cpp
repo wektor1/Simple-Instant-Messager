@@ -50,4 +50,22 @@ TEST(MessagesSenderManagerTest, AssertContinuousMessagesSendingStops) {
   t1.join();
 }
 
+TEST(MessagesSenderManagerTest, AssertAsyncWorkContinuousSendAndCreateNew) {
+  MockClientInterface *cltInt(new MockClientInterface);
+  MockMessageHandlerInterface *msgHndl(new MockMessageHandlerInterface);
 
+  EXPECT_CALL(*cltInt, send(_)).Times(AtLeast(1));
+  EXPECT_CALL(*msgHndl, messageInQueue())
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(true));
+
+  MessagesSenderManager mgr(cltInt, msgHndl);
+  mgr.beginConnection();
+  std::thread t1(&MessagesSenderManager::continuousMessageSending, &mgr);
+  auto t2 =
+      std::async(std::launch::async, &MessagesSenderManager::createNewMessage,
+                 &mgr, "Default");
+  std::this_thread::sleep_for(1s);
+  mgr.endConnection();
+  t1.join();
+}

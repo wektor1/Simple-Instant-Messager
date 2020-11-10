@@ -18,6 +18,7 @@ bool MessagesSenderManager::beginConnection() {
   } catch (const std::exception &e) {
     return false;
   }
+  std::lock_guard<std::mutex> lockValidator(m_messHandlerMutex);
   m_connectionValid = true;
   return true;
 }
