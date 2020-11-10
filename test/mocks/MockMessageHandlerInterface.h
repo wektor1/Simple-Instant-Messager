@@ -6,5 +6,5 @@ class MockMessageHandlerInterface : public MessageHandlerInterface {
 public:
   MOCK_METHOD(bool, messageInQueue, (), (const override));
   MOCK_METHOD(void, messageToQueue, (const std::string message), (override));
-  MOCK_METHOD(std::string, messageToSend, (), (override));
+  MOCK_METHOD(std::string, takeMessageFromQueue, (), (override));
 };

@@ -26,8 +26,7 @@ void MessageReciveServer::disconnected() {
 
 std::string MessageReciveServer::getMessage() {
   boost::asio::streambuf buffer;
-  boost::asio::read_until(m_serverSocket, buffer, MESSAGE_END);
+  auto len = boost::asio::read_until(m_serverSocket, buffer, MESSAGE_END);
   std::string data = boost::asio::buffer_cast<const char *>(buffer.data());
-  data.pop_back();
-  return data;
+  return data.substr(0, len-1);
 }

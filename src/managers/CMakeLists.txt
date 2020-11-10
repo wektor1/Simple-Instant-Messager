@@ -2,9 +2,11 @@ cmake_minimum_required(VERSION 3.8)
 
 set(managers_headers
     MessagesSenderManager.h
+    MessagesReciverManager.h
 )
 set(managers_sources
     MessagesSenderManager.cpp
+    MessagesReciverManager.cpp
 )
 
 add_library(Managers-lib ${managers_headers} ${managers_sources})

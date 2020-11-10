@@ -6,4 +6,4 @@ void MessageHandler::messageToQueue(const std::string mess) {
   objectToQueue(mess);
 }
 
-std::string MessageHandler::messageToSend() { return processFirst(); }
+std::string MessageHandler::takeMessageFromQueue() { return processFirst(); }

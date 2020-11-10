@@ -10,5 +10,5 @@ class MessageHandler : public MessageHandlerInterface, StringHandler {
 public:
   bool messageInQueue() const override;
   void messageToQueue(const std::string mess) override;
-  std::string messageToSend() override;
+  std::string takeMessageFromQueue() override;
 };

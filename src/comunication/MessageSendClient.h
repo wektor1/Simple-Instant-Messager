@@ -8,7 +8,6 @@ public:
   MessageSendClient(const std::string &hostAddress, const short &hostPort);
   void connect() override;
   void send(const std::string &message) override;
-  void sendMessage(const boost::asio::const_buffer &buff);
   void disconnect() override;
 
 private:
@@ -16,4 +15,5 @@ private:
   boost::asio::ip::tcp::socket m_clientSocket;
   std::string m_hostAddress;
   short m_hostPort;
+  void sendMessage(const boost::asio::const_buffer &buff);
 };

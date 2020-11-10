@@ -17,19 +17,19 @@ TEST(MessageHandlerTest, AssertAddingMessagesToQueue) {
 TEST(MessageHandlerTest, AssertProcessFirstToRemoveFirstMess) {
   MessageHandler messHndlr;
   messHndlr.messageToQueue("New Mess");
-  messHndlr.messageToSend();
+  messHndlr.takeMessageFromQueue();
   ASSERT_FALSE(messHndlr.messageInQueue());
 }
 
 TEST(MessageHandlerTest, AssertThrowIfProcessingEmptyQueue) {
   MessageHandler messHndlr;
-  ASSERT_THROW(messHndlr.messageToSend(), EmptyQueueException);
+  ASSERT_THROW(messHndlr.takeMessageFromQueue(), EmptyQueueException);
 }
 
 TEST(MessageHandlerTest, AssertSameMessageProcessing) {
   MessageHandler messHndlr;
   std::string mess = "New mess";
   messHndlr.messageToQueue(mess);
-  auto processed_mess = messHndlr.messageToSend();
+  auto processed_mess = messHndlr.takeMessageFromQueue();
   ASSERT_EQ(processed_mess, mess);
 }
