@@ -12,10 +12,6 @@ MessagesSenderManager::MessagesSenderManager(
     : m_messageSender(std::move(messageSender)),
       m_messageHandler(std::move(messageHandler)), m_connectionValid(false) {}
 
-void MessagesSenderManager::createNewMessage(const std::string mess) {
-  std::lock_guard<std::mutex> lockQueue(m_messHandlerMutex);
-  m_messageHandler->messageToQueue(mess);
-}
 bool MessagesSenderManager::beginConnection() {
   try {
     m_messageSender->connect();
@@ -31,11 +27,16 @@ void MessagesSenderManager::endConnection() {
   m_connectionValid = false;
 }
 
+void MessagesSenderManager::createNewMessage(const std::string mess) {
+  std::lock_guard<std::mutex> lockQueue(m_messHandlerMutex);
+  m_messageHandler->messageToQueue(mess);
+}
+
 void MessagesSenderManager::continuousMessageSending() {
   while (true) {
     m_messHandlerMutex.lock();
     if (m_messageHandler->messageInQueue() && m_connectionValid) {
-      m_messageSender->send(m_messageHandler->messageToSend());
+      sendMessageInQueue();
     } else if (!m_connectionValid) {
       m_messHandlerMutex.unlock();
       break;
@@ -43,4 +44,8 @@ void MessagesSenderManager::continuousMessageSending() {
     m_messHandlerMutex.unlock();
     std::this_thread::sleep_for(2s);
   }
+}
+
+void MessagesSenderManager::sendMessageInQueue() {
+  m_messageSender->send(m_messageHandler->messageToSend());
 }

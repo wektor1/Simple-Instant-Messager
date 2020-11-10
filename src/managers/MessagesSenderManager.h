@@ -8,9 +8,9 @@ class MessagesSenderManager {
 public:
   MessagesSenderManager(ClientInterface *messageSender,
                         MessageHandlerInterface *messageHandler) noexcept;
-  void createNewMessage(const std::string mess);
   bool beginConnection();
   void endConnection();
+  void createNewMessage(const std::string mess);
   void continuousMessageSending();
 
 private:
@@ -18,4 +18,5 @@ private:
   std::unique_ptr<MessageHandlerInterface> m_messageHandler;
   std::mutex m_messHandlerMutex;
   bool m_connectionValid;
+  void sendMessageInQueue();
 };
