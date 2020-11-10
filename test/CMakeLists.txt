@@ -5,6 +5,7 @@ set(test_sources
     test_MessageHandler.cpp
     test_MessagesSenderManager.cpp
     test_MessagesReciverManager.cpp
+    integration_MessagesSenderManager.cpp
 )
 
 add_executable(${PROJECT_NAME}-ut ${test_sources})
