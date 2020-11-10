@@ -2,21 +2,16 @@
 #include "MessagesReciverManager.h"
 #include "MockMessageHandlerInterface.h"
 #include "MockServerInterface.h"
-#include <future>
-#include <chrono>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-using ::testing::_;
 using ::testing::Return;
-using ::testing::AtLeast;
-using namespace std::chrono_literals;
-
-void threadTryCatch() {}
+using ::testing::StrictMock;
 
 TEST(MessagesReciverManagerTest, AssertConnectionWithProperData) {
-  MockServerInterface *servInt(new MockServerInterface);
-  MockMessageHandlerInterface *msgHndl(new MockMessageHandlerInterface);
+  StrictMock<MockServerInterface> *servInt(new StrictMock<MockServerInterface>);
+  StrictMock<MockMessageHandlerInterface> *msgHndl(
+      new StrictMock<MockMessageHandlerInterface>);
 
   EXPECT_CALL(*servInt, acceptConnection()).Times(1);
 
@@ -24,45 +19,30 @@ TEST(MessagesReciverManagerTest, AssertConnectionWithProperData) {
   ASSERT_TRUE(mgr.acceptConnection());
 }
 
-TEST(MessagesReciverManagerTest, AssertContinuousReadStopsAtEndConnection) {
-  MockServerInterface *servInt(new MockServerInterface);
-  MockMessageHandlerInterface *msgHndl(new MockMessageHandlerInterface);
+TEST(MessagesReciverManagerTest, AssertGiveLastMessageWaitsForMessage) {
+  StrictMock<MockServerInterface> *servInt(new StrictMock<MockServerInterface>);
+  StrictMock<MockMessageHandlerInterface> *msgHndl(
+      new StrictMock<MockMessageHandlerInterface>);
 
-  EXPECT_CALL(*servInt, read())
-      .Times(AtLeast(2))
-      .WillOnce(Return("First"))
-      .WillOnce(Return("Second"))
-      .WillRepeatedly(Return("Default"));
-  EXPECT_CALL(*msgHndl, messageToQueue("Second"));
-  EXPECT_CALL(*msgHndl, messageToQueue("First"));
+  EXPECT_CALL(*msgHndl, messageInQueue())
+      .Times(3)
+      .WillOnce(Return(false))
+      .WillOnce(Return(false))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*msgHndl, takeMessageFromQueue())
+      .Times(1)
+      .WillOnce(Return("mess"));
 
   MessagesReciverManager mgr(servInt, msgHndl);
-  mgr.acceptConnection();
-  std::thread t1(&MessagesReciverManager::continuousBufferRead, &mgr);
-  std::this_thread::sleep_for(3s);
-  mgr.endConnection();
-  t1.join();
+  ASSERT_EQ(mgr.giveLastMessage(), "mess");
 }
 
-TEST(MessagesReciverManagerTest, AssertReadAndGiveAsyncWork) {
-  MockServerInterface *servInt(new MockServerInterface);
-  MockMessageHandlerInterface *msgHndl(new MockMessageHandlerInterface);
+TEST(MessagesReciverManagerTest, AssertConinuousReadBreakIfConnectionLost) {
+  StrictMock<MockServerInterface> *servInt(new StrictMock<MockServerInterface>);
+  StrictMock<MockMessageHandlerInterface> *msgHndl(
+      new StrictMock<MockMessageHandlerInterface>);
 
-  EXPECT_CALL(*servInt, read())
-      .Times(AtLeast(1))
-      .WillRepeatedly(Return("Default"));
-  EXPECT_CALL(*msgHndl, messageInQueue())
-      .Times(AtLeast(1))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(*msgHndl, takeMessageFromQueue())
-      .Times(AtLeast(1))
-      .WillRepeatedly(Return("Default"));
+  EXPECT_CALL(*servInt, read()).Times(1);
   MessagesReciverManager mgr(servInt, msgHndl);
-  mgr.acceptConnection();
-  std::thread t1(&MessagesReciverManager::continuousBufferRead, &mgr);
-  auto t2 = std::async(std::launch::async, &MessagesReciverManager::giveLastMessage, &mgr);
-  std::this_thread::sleep_for(1s);
-  mgr.endConnection();
-  t1.join();
-  ASSERT_EQ(t2.get(), "Default");
+  mgr.continuousBufferRead();
 }
