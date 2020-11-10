@@ -1,7 +1,7 @@
 #include "ComunicationExceptions.h"
 #include "MessagesReciverManager.h"
-#include "mocks/MockMessageHandlerInterface.h"
-#include "mocks/MockServerInterface.h"
+#include "MockMessageHandlerInterface.h"
+#include "MockServerInterface.h"
 #include <future>
 #include <chrono>
 #include <gmock/gmock.h>
@@ -14,7 +14,7 @@ using namespace std::chrono_literals;
 
 void threadTryCatch() {}
 
-TEST(MessagesReciverManager, AssertConnectionWithProperData) {
+TEST(MessagesReciverManagerTest, AssertConnectionWithProperData) {
   MockServerInterface *servInt(new MockServerInterface);
   MockMessageHandlerInterface *msgHndl(new MockMessageHandlerInterface);
 
@@ -24,7 +24,7 @@ TEST(MessagesReciverManager, AssertConnectionWithProperData) {
   ASSERT_TRUE(mgr.acceptConnection());
 }
 
-TEST(MessagesReciverManager, AssertContinuousReadStopsAtEndConnection) {
+TEST(MessagesReciverManagerTest, AssertContinuousReadStopsAtEndConnection) {
   MockServerInterface *servInt(new MockServerInterface);
   MockMessageHandlerInterface *msgHndl(new MockMessageHandlerInterface);
 
@@ -44,7 +44,7 @@ TEST(MessagesReciverManager, AssertContinuousReadStopsAtEndConnection) {
   t1.join();
 }
 
-TEST(MessagesReciverManager, AssertReadAndGiveAsyncWork) {
+TEST(MessagesReciverManagerTest, AssertReadAndGiveAsyncWork) {
   MockServerInterface *servInt(new MockServerInterface);
   MockMessageHandlerInterface *msgHndl(new MockMessageHandlerInterface);
 

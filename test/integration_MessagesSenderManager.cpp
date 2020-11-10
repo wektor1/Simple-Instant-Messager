@@ -1,6 +1,6 @@
 #include "MessageHandler.h"
 #include "MessagesSenderManager.h"
-#include "mocks/MockClientInterface.h"
+#include "MockClientInterface.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <chrono>
