@@ -1,3 +1,4 @@
+#pragma once
 #include "MessageHandlerInterface.h"
 #include <gmock/gmock.h>
 #include <string>
