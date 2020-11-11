@@ -5,8 +5,6 @@ set(test_sources
     test_MessageHandler.cpp
     test_MessagesSenderManager.cpp
     test_MessagesReciverManager.cpp
-    integration_MessagesSenderManager.cpp
-    integration_MessagesReciverManager.cpp
 )
 
 add_library(Mocks-lib INTERFACE)

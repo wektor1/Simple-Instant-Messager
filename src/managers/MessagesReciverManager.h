@@ -1,17 +1,18 @@
+#include "MessReciverMangrInterface.h"
 #include "MessageHandlerInterface.h"
 #include "ServerInterface.h"
 #include <memory>
 #include <mutex>
 #include <string>
 
-class MessagesReciverManager {
+class MessagesReciverManager : public MessReciverMangrInterface {
 public:
   MessagesReciverManager(ServerInterface *messageSender,
                          MessageHandlerInterface *messageHandler) noexcept;
-  bool acceptConnection();
-  void continuousBufferRead();
-  void endConnection();
-  std::string giveLastMessage();
+  bool acceptConnection() override;
+  void continuousBufferRead() override;
+  void endConnection() override;
+  std::string giveLastMessage() override;
 
 private:
   std::unique_ptr<ServerInterface> m_messageReciver;
