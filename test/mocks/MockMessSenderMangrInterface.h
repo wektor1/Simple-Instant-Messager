@@ -3,7 +3,7 @@
 #include <gmock/gmock.h>
 #include <string>
 
-class MockMessReciverMangrInterface : public MessReciverMangrInterface {
+class MockMessSenderMangrInterface : public MessSenderMangrInterface {
 public:
   MOCK_METHOD(bool, beginConnection, (), (override));
   MOCK_METHOD(void, endConnection, (), (override));

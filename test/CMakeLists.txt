@@ -5,6 +5,7 @@ set(test_sources
     test_MessageHandler.cpp
     test_MessagesSenderManager.cpp
     test_MessagesReciverManager.cpp
+    test_Chat.cpp
 )
 
 add_library(Mocks-lib INTERFACE)
@@ -14,4 +15,4 @@ add_executable(${PROJECT_NAME}-ut ${test_sources})
 
 target_include_directories(${PROJECT_NAME}-ut PUBLIC  ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(${PROJECT_NAME}-ut gtest_main gmock_main
-                      Handlers-lib Comunication-includes Managers-lib Mocks-lib)
+                      Handlers-lib Comunication-includes Managers-lib Mocks-lib Messanger-lib)
