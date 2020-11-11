@@ -16,7 +16,7 @@ void ChatUI::Draw(const std::list<std::string> &logs) {
 
 void ChatUI::prepareLogs(std::ostringstream &screen,
                          const std::list<std::string> &logs) {
-  std::for_each(logs.crend(), logs.crbegin(),
+  std::for_each(logs.crbegin(), logs.crend(),
                 [&screen](auto &log) { screen << log << std::endl; });
 }
 
