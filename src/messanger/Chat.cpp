@@ -8,9 +8,10 @@
 using namespace std::chrono_literals;
 
 Chat::Chat(MessSenderMangrInterface *messSender,
-           MessReciverMangrInterface *messReciver) noexcept
+           MessReciverMangrInterface *messReciver,
+           std::string name) noexcept
     : m_messSender(std::move(messSender)),
-      m_messReciver(std::move(messReciver)) {
+      m_messReciver(std::move(messReciver)), m_name(name) {
   std::fill(m_lastLogs.begin(), m_lastLogs.end(), "");
 }
 
@@ -72,10 +73,12 @@ void Chat::logsUpdate(const std::string log) {
 }
 
 void Chat::sendNewMessage(const std::string &mess) {
+  std::string log = m_name.append(": ");
+  log = log.append(mess);
   m_logsMutex.lock();
-  logsUpdate(mess);
+  logsUpdate(log);
   m_logsMutex.unlock();
-  m_messSender->createNewMessage(mess);
+  m_messSender->createNewMessage(log);
 }
 
 void Chat::openChat() {

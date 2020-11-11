@@ -10,10 +10,9 @@
 class Chat {
 public:
   Chat(MessSenderMangrInterface *messSender,
-       MessReciverMangrInterface *messReciver) noexcept;
+       MessReciverMangrInterface *messReciver,
+       std::string name) noexcept;
   bool establishConnection();
-  bool tryAcceptUntilTimeout();
-  bool tryConnectUntilTimeout();
   void startReadingMessages();
   void openChat();
   void endChat();
@@ -24,7 +23,10 @@ private:
   std::list<std::string> m_lastLogs;
   ChatUI m_ui;
   std::mutex m_logsMutex;
+  std::string m_name;
   void addLog(const std::string &newLog);
   void logsUpdate(const std::string log);
   void sendNewMessage(const std::string &mess);
+  bool tryAcceptUntilTimeout();
+  bool tryConnectUntilTimeout();
 };

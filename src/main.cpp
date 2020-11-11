@@ -10,7 +10,7 @@
 #include <string>
 
 std::unique_ptr<Chat> makeChat(std::string scndUserAddress, short readPort,
-                               short scndUserPort) {
+                               short scndUserPort, std::string name) {
   MessageReciveServer *messServ(new MessageReciveServer(readPort));
   MessageSendClient *messClt(
       new MessageSendClient(scndUserAddress, scndUserPort));
@@ -18,7 +18,7 @@ std::unique_ptr<Chat> makeChat(std::string scndUserAddress, short readPort,
       new MessagesReciverManager(messServ, new MessageHandler()));
   MessagesSenderManager *sendMgr(
       new MessagesSenderManager(messClt, new MessageHandler()));
-  return std::make_unique<Chat>(sendMgr, recMgr);
+  return std::make_unique<Chat>(sendMgr, recMgr, name);
 }
 
 int main(int argc, char **argv) {
@@ -26,10 +26,10 @@ int main(int argc, char **argv) {
   char selectOption = getchar();
   if (selectOption == '1') {
     std::cout << "1";
-    p1 = makeChat("192.168.0.66", 1025, 1026);
+    p1 = makeChat("192.168.0.66", 1025, 1026, "Host 1");
   } else if (selectOption == '2') {
     std::cout << "2";
-    p1 = makeChat("192.168.0.66", 1026, 1025);
+    p1 = makeChat("192.168.0.66", 1026, 1025, "Host 2");
   }
   if (p1->establishConnection()) {
     std::cout << "Connected";
