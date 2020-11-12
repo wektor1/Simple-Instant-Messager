@@ -18,19 +18,21 @@ Chat::Chat(MessSenderMangrInterface *messSender,
 
 bool Chat::establishConnection() {
   auto reciverConnected =
-      std::async(std::launch::async, &Chat::tryAcceptUntilTimeout, this);
+      std::async(std::launch::async, &Chat::tryUntilTimeout, this,
+                 std::bind(&Chat::tryAcceptConnection, this));
   auto senderConnected =
-      std::async(std::launch::async, &Chat::tryConnectUntilTimeout, this);
+      std::async(std::launch::async, &Chat::tryUntilTimeout, this,
+                 std::bind(&Chat::tryBeginConnection, this));
   if (reciverConnected.get() && senderConnected.get())
     return true;
   return false;
 }
 
-bool Chat::tryAcceptUntilTimeout() {
+bool Chat::tryUntilTimeout(std::function<bool()> conn) {
   auto start_time = std::chrono::system_clock::now();
   auto current_time = start_time;
   while (current_time < start_time + 10s) {
-    auto result = m_messReciver->acceptConnection();
+    auto result = conn();
     if (result)
       return true;
     current_time = std::chrono::system_clock::now();
@@ -38,17 +40,9 @@ bool Chat::tryAcceptUntilTimeout() {
   return false;
 }
 
-bool Chat::tryConnectUntilTimeout() {
-  auto start_time = std::chrono::system_clock::now();
-  auto current_time = start_time;
-  while (current_time < start_time + 10s) {
-    auto result = m_messSender->beginConnection();
-    if (result)
-      return true;
-    current_time = std::chrono::system_clock::now();
-  }
-  return false;
-}
+bool Chat::tryAcceptConnection() { return m_messReciver->acceptConnection(); }
+
+bool Chat::tryBeginConnection() { return m_messSender->beginConnection(); }
 
 void Chat::readUntilDisconnected() {
   try {

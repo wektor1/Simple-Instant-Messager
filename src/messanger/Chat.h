@@ -3,6 +3,7 @@
 #include "LogerInterface.h"
 #include "MessReciverMangrInterface.h"
 #include "MessSenderMangrInterface.h"
+#include <functional>
 #include <list>
 #include <memory>
 #include <mutex>
@@ -14,11 +15,7 @@ public:
        MessReciverMangrInterface *messReciver, LogerInterface *loger,
        ChatUIinterface *chatUI) noexcept;
   bool establishConnection();
-  void startReadingMessages();
   void openChat();
-  void endChat();
-
-  void drawUI();
 
 private:
   std::unique_ptr<MessSenderMangrInterface> m_messSender;
@@ -29,9 +26,13 @@ private:
   void optionSelect();
   std::string logsUpdate(const std::string &mess);
   void sendNewMessage(const std::string &mess);
-  bool tryAcceptUntilTimeout();
-  bool tryConnectUntilTimeout();
+  bool tryUntilTimeout(std::function<bool()> conn);
+  void startReadingMessages();
+  bool tryAcceptConnection();
+  bool tryBeginConnection();
   void readUntilDisconnected();
   void chatMenuLoop();
   void messageCreation();
+  void endChat();
+  void drawUI();
 };
