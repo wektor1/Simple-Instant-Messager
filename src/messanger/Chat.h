@@ -32,6 +32,7 @@ private:
   void sendNewMessage(const std::string &mess);
   bool tryAcceptUntilTimeout();
   bool tryConnectUntilTimeout();
+  void readUntilDisconnected();
   void chatMenuLoop();
   void messageCreation();
 };

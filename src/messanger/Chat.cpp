@@ -1,4 +1,5 @@
 #include "Chat.h"
+#include "ComunicationExceptions.h"
 #include <algorithm>
 #include <chrono>
 #include <enumMenuStatus.h>
@@ -49,6 +50,16 @@ bool Chat::tryConnectUntilTimeout() {
   return false;
 }
 
+void Chat::readUntilDisconnected() {
+  try {
+    m_messReciver->continuousBufferRead();
+  } catch (const ConnectionLostException &e) {
+    endChat();
+  } catch (const std::exception &e) {
+    std::cout << e.what();
+  }
+}
+
 void Chat::addLog(const std::string &newLog) {
   if (m_lastLogs.size() == 10)
     m_lastLogs.pop_back();
@@ -56,14 +67,17 @@ void Chat::addLog(const std::string &newLog) {
 }
 
 void Chat::startReadingMessages() {
-  auto readBuff = std::async(std::launch::async,
-                             &MessReciverMangrInterface::continuousBufferRead,
-                             m_messReciver.get());
-  while (true) {
-    std::string newMessage = m_messReciver->giveLastMessage();
-    m_logsMutex.lock();
-    logsUpdate(newMessage);
-    m_logsMutex.unlock();
+  auto readBuff =
+      std::async(std::launch::async, &Chat::readUntilDisconnected, this);
+  try {
+    while (true) {
+      std::string newMessage = m_messReciver->giveLastMessage();
+      m_logsMutex.lock();
+      logsUpdate(newMessage);
+      m_logsMutex.unlock();
+    }
+  } catch (const std::exception &e) {
+    readBuff.get();
   }
 }
 
@@ -107,16 +121,23 @@ void Chat::chatMenuLoop() {
 void Chat::optionSelect() {
   std::string input;
   std::getline(std::cin, input);
-  switch (std::stoi(input)) {
-  case 1:
-    m_menuStatus = MenuStatus::Write;
-    m_ui.setStatus(m_menuStatus);
-    drawUI();
-    messageCreation();
-    break;
-  case 2:
-    endChat();
-    break;
+  try {
+    int toInt = std::stoi(input);
+    switch (toInt) {
+    case 1:
+      m_menuStatus = MenuStatus::Write;
+      m_ui.setStatus(m_menuStatus);
+      drawUI();
+      messageCreation();
+      break;
+    case 2:
+      sendNewMessage(">user quit<");
+      std::this_thread::sleep_for(1s);
+      endChat();
+      break;
+    }
+  } catch (const std::invalid_argument &e) {
+    std::cout << e.what();
   }
 }
 
@@ -126,12 +147,11 @@ void Chat::openChat() {
   auto sendMess = std::async(
       std::launch::async, &MessSenderMangrInterface::continuousMessageSending,
       m_messSender.get());
-  chatMenuLoop();
+  auto menu = std::async(std::launch::async, &Chat::chatMenuLoop, this);
+  readingRecived.get();
 }
 
 void Chat::endChat() {
-  sendNewMessage(">user quit<");
-  std::this_thread::sleep_for(1s);
   m_messSender->endConnection();
   m_messReciver->endConnection();
   throw std::runtime_error("Temporary except for chat ending");

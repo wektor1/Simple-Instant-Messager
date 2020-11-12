@@ -25,7 +25,6 @@ bool MessagesSenderManager::beginConnection() {
 
 void MessagesSenderManager::endConnection() {
   std::lock_guard<std::mutex> lockQueue(m_messHandlerMutex);
-  m_messageSender->disconnect();
   m_connectionValid = false;
 }
 
@@ -37,10 +36,11 @@ void MessagesSenderManager::createNewMessage(const std::string mess) {
 void MessagesSenderManager::continuousMessageSending() {
   while (true) {
     m_messHandlerMutex.lock();
-    if (m_messageHandler->messageInQueue() && m_connectionValid) {
+    if (m_messageHandler->messageInQueue()) {
       sendMessageInQueue();
     } else if (!m_connectionValid) {
       m_messHandlerMutex.unlock();
+      m_messageSender->disconnect();
       break;
     }
     m_messHandlerMutex.unlock();

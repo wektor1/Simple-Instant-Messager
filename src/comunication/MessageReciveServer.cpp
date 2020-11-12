@@ -15,7 +15,7 @@ void MessageReciveServer::acceptConnection() {
 std::string MessageReciveServer::read() {
   std::string response;
   response = getMessage();
-  if (response + "\n" == STOP_CODE)
+  if (strcmp(response.c_str(), STOP_CODE) == 0)
     disconnected();
   return response;
 }

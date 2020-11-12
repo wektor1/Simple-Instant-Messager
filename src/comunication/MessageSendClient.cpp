@@ -20,5 +20,5 @@ void MessageSendClient::sendMessage(const boost::asio::const_buffer &buff) {
 }
 
 void MessageSendClient::disconnect() {
-  sendMessage(boost::asio::buffer(STOP_CODE));
+  send(STOP_CODE);
 }
