@@ -1,6 +1,7 @@
 #include "Chat.h"
 #include <algorithm>
 #include <chrono>
+#include <enumMenuStatus.h>
 #include <future>
 #include <iostream>
 #include <string>
@@ -8,8 +9,7 @@
 using namespace std::chrono_literals;
 
 Chat::Chat(MessSenderMangrInterface *messSender,
-           MessReciverMangrInterface *messReciver,
-           std::string name) noexcept
+           MessReciverMangrInterface *messReciver, std::string name) noexcept
     : m_messSender(std::move(messSender)),
       m_messReciver(std::move(messReciver)), m_name(name) {
   std::fill(m_lastLogs.begin(), m_lastLogs.end(), "");
@@ -69,16 +69,55 @@ void Chat::startReadingMessages() {
 
 void Chat::logsUpdate(const std::string log) {
   addLog(log);
-  m_ui.Draw(m_lastLogs);
+  m_ui.draw(m_lastLogs);
 }
 
 void Chat::sendNewMessage(const std::string &mess) {
-  std::string log = m_name.append(": ");
-  log = log.append(mess);
+  std::string log = m_name;
+  log.append(": ");
+  log.append(mess);
   m_logsMutex.lock();
   logsUpdate(log);
   m_logsMutex.unlock();
   m_messSender->createNewMessage(log);
+}
+
+void Chat::messageCreation() {
+  std::string userMessage;
+  std::getline(std::cin, userMessage);
+  sendNewMessage(userMessage);
+  m_menuStatus = MenuStatus::Menu;
+  m_ui.setStatus(m_menuStatus);
+}
+
+void Chat::drawUI() {
+  m_logsMutex.lock();
+  m_ui.draw(m_lastLogs);
+  m_logsMutex.unlock();
+}
+
+void Chat::chatMenuLoop() {
+  m_ui.setStatus(m_menuStatus);
+  while (true) {
+    drawUI();
+    optionSelect();
+  }
+}
+
+void Chat::optionSelect() {
+  std::string input;
+  std::getline(std::cin, input);
+  switch (std::stoi(input)) {
+  case 1:
+    m_menuStatus = MenuStatus::Write;
+    m_ui.setStatus(m_menuStatus);
+    drawUI();
+    messageCreation();
+    break;
+  case 2:
+    endChat();
+    break;
+  }
 }
 
 void Chat::openChat() {
@@ -87,14 +126,13 @@ void Chat::openChat() {
   auto sendMess = std::async(
       std::launch::async, &MessSenderMangrInterface::continuousMessageSending,
       m_messSender.get());
-  std::string userMessage;
-  while (true) {
-    std::getline(std::cin, userMessage);
-    sendNewMessage(userMessage);
-  }
+  chatMenuLoop();
 }
 
 void Chat::endChat() {
-  m_messReciver->endConnection();
+  sendNewMessage(">user quit<");
+  std::this_thread::sleep_for(1s);
   m_messSender->endConnection();
+  m_messReciver->endConnection();
+  throw std::runtime_error("Temporary except for chat ending");
 }

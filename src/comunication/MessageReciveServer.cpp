@@ -15,7 +15,7 @@ void MessageReciveServer::acceptConnection() {
 std::string MessageReciveServer::read() {
   std::string response;
   response = getMessage();
-  if (response == STOP_CODE)
+  if (response + "\n" == STOP_CODE)
     disconnected();
   return response;
 }
@@ -28,5 +28,5 @@ std::string MessageReciveServer::getMessage() {
   boost::asio::streambuf buffer;
   auto len = boost::asio::read_until(m_serverSocket, buffer, MESSAGE_END);
   std::string data = boost::asio::buffer_cast<const char *>(buffer.data());
-  return data.substr(0, len-1);
+  return data.substr(0, len - 1);
 }

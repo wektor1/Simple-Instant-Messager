@@ -25,8 +25,8 @@ bool MessagesSenderManager::beginConnection() {
 
 void MessagesSenderManager::endConnection() {
   std::lock_guard<std::mutex> lockQueue(m_messHandlerMutex);
-  m_connectionValid = false;
   m_messageSender->disconnect();
+  m_connectionValid = false;
 }
 
 void MessagesSenderManager::createNewMessage(const std::string mess) {

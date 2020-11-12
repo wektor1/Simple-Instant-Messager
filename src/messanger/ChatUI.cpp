@@ -1,17 +1,52 @@
 #include "ChatUI.h"
 #include <algorithm>
 #include <iostream>
+#include <mutex>
 #include <sstream>
 #include <string>
 
 ChatUI::ChatUI() {}
 
-void ChatUI::Draw(const std::list<std::string> &logs) {
+void ChatUI::draw(const std::list<std::string> &logs) {
   ClearScrean();
-  std::ostringstream screen(std::ios_base::ate);
-  prepareLogs(screen, logs);
-  screen << "Type your message:\n";
+  std::ostringstream screen = fullChatBox(logs);
+  selectModule(screen);
   std::cout << screen.str();
+}
+
+void ChatUI::setStatus(const MenuStatus &status) {
+  std::lock_guard<std::mutex> statusLock(m_statusMutex);
+  m_status = status;
+}
+
+std::ostringstream ChatUI::fullChatBox(const std::list<std::string> &logs) {
+  std::ostringstream screen(std::ios_base::ate);
+  prepareBorder(screen);
+  prepareLogs(screen, logs);
+  prepareBorder(screen);
+  return screen;
+}
+
+void ChatUI::menuModule(std::ostringstream &screen) {
+  screen << "1--Write new message\n"
+         << "2--End chat\n"
+         << "Type number:\n";
+}
+
+void ChatUI::selectModule(std::ostringstream &screen) {
+  std::lock_guard<std::mutex> statusLock(m_statusMutex);
+  switch (m_status) {
+  case MenuStatus::Write:
+    newMessageModule(screen);
+    break;
+  case MenuStatus::Menu:
+    menuModule(screen);
+    break;
+  }
+}
+
+void ChatUI::newMessageModule(std::ostringstream &screen) {
+  screen << "Type your message:\n";
 }
 
 void ChatUI::prepareLogs(std::ostringstream &screen,
@@ -21,3 +56,10 @@ void ChatUI::prepareLogs(std::ostringstream &screen,
 }
 
 void ChatUI::ClearScrean() { std::cout << std::string(100, '\n'); }
+
+void ChatUI::prepareBorder(std::ostringstream &screen) {
+  for (int i = 0; i < 40; i++) {
+    screen << "-";
+  }
+  screen << std::endl;
+}

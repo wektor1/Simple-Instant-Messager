@@ -23,7 +23,9 @@ std::unique_ptr<Chat> makeChat(std::string scndUserAddress, short readPort,
 
 int main(int argc, char **argv) {
   std::unique_ptr<Chat> p1;
+  std::cout << "Type \"1\" for Host 1, \"2\" for Host 2:";
   char selectOption = getchar();
+  getchar();
   if (selectOption == '1') {
     std::cout << "1";
     p1 = makeChat("192.168.0.66", 1025, 1026, "Host 1");
@@ -33,7 +35,11 @@ int main(int argc, char **argv) {
   }
   if (p1->establishConnection()) {
     std::cout << "Connected";
-    p1->openChat();
+    try {
+      p1->openChat();
+    } catch (const std::exception &e) {
+      std::cout << e.what();
+    }
   }
   return 0;
 }

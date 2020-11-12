@@ -8,6 +8,7 @@
 using ::testing::Return;
 using ::testing::StrictMock;
 using ::testing::Throw;
+using ::testing::AtLeast;
 
 TEST(ChatTest, AssertConnectionReturnTrueAtSucces) {
   StrictMock<MockMessReciverMangrInterface> *messRec(
@@ -28,8 +29,8 @@ TEST(ChatTest, AssertConnectionReturnFalseAtFail) {
   StrictMock<MockMessSenderMangrInterface> *messSend(
       new StrictMock<MockMessSenderMangrInterface>);
 
-  EXPECT_CALL(*messRec, acceptConnection()).Times(1).WillOnce(Return(true));
-  EXPECT_CALL(*messSend, beginConnection()).Times(1).WillOnce(Return(false));
+  EXPECT_CALL(*messRec, acceptConnection()).Times(AtLeast(1)).WillRepeatedly(Return(true));
+  EXPECT_CALL(*messSend, beginConnection()).Times(AtLeast(1)).WillRepeatedly(Return(false));
 
   Chat chat(messSend, messRec, "Test");
   ASSERT_FALSE(chat.establishConnection());

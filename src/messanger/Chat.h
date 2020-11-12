@@ -10,12 +10,13 @@
 class Chat {
 public:
   Chat(MessSenderMangrInterface *messSender,
-       MessReciverMangrInterface *messReciver,
-       std::string name) noexcept;
+       MessReciverMangrInterface *messReciver, std::string name) noexcept;
   bool establishConnection();
   void startReadingMessages();
   void openChat();
   void endChat();
+
+  void drawUI();
 
 private:
   std::unique_ptr<MessSenderMangrInterface> m_messSender;
@@ -24,9 +25,13 @@ private:
   ChatUI m_ui;
   std::mutex m_logsMutex;
   std::string m_name;
+  MenuStatus m_menuStatus = MenuStatus::Menu;
+  void optionSelect();
   void addLog(const std::string &newLog);
   void logsUpdate(const std::string log);
   void sendNewMessage(const std::string &mess);
   bool tryAcceptUntilTimeout();
   bool tryConnectUntilTimeout();
+  void chatMenuLoop();
+  void messageCreation();
 };
