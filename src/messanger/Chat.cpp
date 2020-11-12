@@ -10,11 +10,11 @@
 using namespace std::chrono_literals;
 
 Chat::Chat(MessSenderMangrInterface *messSender,
-           MessReciverMangrInterface *messReciver, std::string name) noexcept
+           MessReciverMangrInterface *messReciver, LogerInterface *loger,
+           ChatUIinterface *chatUI) noexcept
     : m_messSender(std::move(messSender)),
-      m_messReciver(std::move(messReciver)), m_name(name) {
-  std::fill(m_lastLogs.begin(), m_lastLogs.end(), "");
-}
+      m_messReciver(std::move(messReciver)), m_loger(std::move(loger)),
+      m_ui(std::move(chatUI)) {}
 
 bool Chat::establishConnection() {
   auto reciverConnected =
@@ -60,40 +60,28 @@ void Chat::readUntilDisconnected() {
   }
 }
 
-void Chat::addLog(const std::string &newLog) {
-  if (m_lastLogs.size() == 10)
-    m_lastLogs.pop_back();
-  m_lastLogs.push_front(newLog);
-}
-
 void Chat::startReadingMessages() {
   auto readBuff =
       std::async(std::launch::async, &Chat::readUntilDisconnected, this);
   try {
     while (true) {
       std::string newMessage = m_messReciver->giveLastMessage();
-      m_logsMutex.lock();
       logsUpdate(newMessage);
-      m_logsMutex.unlock();
     }
   } catch (const std::exception &e) {
     readBuff.get();
   }
 }
 
-void Chat::logsUpdate(const std::string log) {
-  addLog(log);
-  m_ui.draw(m_lastLogs);
+std::string Chat::logsUpdate(const std::string &mess) {
+  auto log = m_loger->makeLog(mess);
+  m_ui->setLastLogs(m_loger->getLogs());
+  return log;
 }
 
 void Chat::sendNewMessage(const std::string &mess) {
-  std::string log = m_name;
-  log.append(": ");
-  log.append(mess);
-  m_logsMutex.lock();
-  logsUpdate(log);
-  m_logsMutex.unlock();
-  m_messSender->createNewMessage(log);
+  m_messSender->createNewMessage(logsUpdate(mess));
+  drawUI();
 }
 
 void Chat::messageCreation() {
@@ -101,17 +89,13 @@ void Chat::messageCreation() {
   std::getline(std::cin, userMessage);
   sendNewMessage(userMessage);
   m_menuStatus = MenuStatus::Menu;
-  m_ui.setStatus(m_menuStatus);
+  m_ui->setStatus(m_menuStatus);
 }
 
-void Chat::drawUI() {
-  m_logsMutex.lock();
-  m_ui.draw(m_lastLogs);
-  m_logsMutex.unlock();
-}
+void Chat::drawUI() { m_ui->draw(); }
 
 void Chat::chatMenuLoop() {
-  m_ui.setStatus(m_menuStatus);
+  m_ui->setStatus(m_menuStatus);
   while (true) {
     drawUI();
     optionSelect();
@@ -126,7 +110,7 @@ void Chat::optionSelect() {
     switch (toInt) {
     case 1:
       m_menuStatus = MenuStatus::Write;
-      m_ui.setStatus(m_menuStatus);
+      m_ui->setStatus(m_menuStatus);
       drawUI();
       messageCreation();
       break;

@@ -4,6 +4,8 @@
 #include "MessageSendClient.h"
 #include "MessagesReciverManager.h"
 #include "MessagesSenderManager.h"
+#include "ChatUI.h"
+#include "Loger.h"
 #include <cstdio>
 #include <iostream>
 #include <memory>
@@ -18,7 +20,9 @@ std::unique_ptr<Chat> makeChat(std::string scndUserAddress, short readPort,
       new MessagesReciverManager(messServ, new MessageHandler()));
   MessagesSenderManager *sendMgr(
       new MessagesSenderManager(messClt, new MessageHandler()));
-  return std::make_unique<Chat>(sendMgr, recMgr, name);
+  Loger *loger(new Loger(name));
+  ChatUI *ui(new ChatUI());
+  return std::make_unique<Chat>(sendMgr, recMgr, loger, ui);
 }
 
 int main(int argc, char **argv) {

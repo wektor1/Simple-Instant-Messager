@@ -3,10 +3,12 @@ cmake_minimum_required(VERSION 3.8)
 set(messanger_headers
     Chat.h
     ChatUI.h
+    Loger.h
 )
 set(messanger_sources
     Chat.cpp
     ChatUI.cpp
+    Loger.cpp
 )
 
 add_library(Messanger-includes INTERFACE)

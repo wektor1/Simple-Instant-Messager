@@ -7,9 +7,9 @@
 
 ChatUI::ChatUI() {}
 
-void ChatUI::draw(const std::list<std::string> &logs) {
+void ChatUI::draw() {
   ClearScrean();
-  std::ostringstream screen = fullChatBox(logs);
+  std::ostringstream screen = fullChatBox();
   selectModule(screen);
   std::cout << screen.str();
 }
@@ -19,10 +19,15 @@ void ChatUI::setStatus(const MenuStatus &status) {
   m_status = status;
 }
 
-std::ostringstream ChatUI::fullChatBox(const std::list<std::string> &logs) {
+void ChatUI::setLastLogs(const std::list<std::string> &logs) {
+  std::lock_guard<std::mutex> logsLock(m_logsMutex);
+  m_lastLogs = logs;
+}
+
+std::ostringstream ChatUI::fullChatBox() {
   std::ostringstream screen(std::ios_base::ate);
   prepareBorder(screen);
-  prepareLogs(screen, logs);
+  prepareLogs(screen);
   prepareBorder(screen);
   return screen;
 }
@@ -49,9 +54,9 @@ void ChatUI::newMessageModule(std::ostringstream &screen) {
   screen << "Type your message:\n";
 }
 
-void ChatUI::prepareLogs(std::ostringstream &screen,
-                         const std::list<std::string> &logs) {
-  std::for_each(logs.crbegin(), logs.crend(),
+void ChatUI::prepareLogs(std::ostringstream &screen) {
+  std::lock_guard<std::mutex> logsLock(m_logsMutex);
+  std::for_each(m_lastLogs.crbegin(), m_lastLogs.crend(),
                 [&screen](auto &log) { screen << log << std::endl; });
 }
 

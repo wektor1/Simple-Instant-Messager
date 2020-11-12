@@ -1,5 +1,6 @@
 #pragma once
-#include "ChatUI.h"
+#include "ChatUIinterface.h"
+#include "LogerInterface.h"
 #include "MessReciverMangrInterface.h"
 #include "MessSenderMangrInterface.h"
 #include <list>
@@ -10,7 +11,8 @@
 class Chat {
 public:
   Chat(MessSenderMangrInterface *messSender,
-       MessReciverMangrInterface *messReciver, std::string name) noexcept;
+       MessReciverMangrInterface *messReciver, LogerInterface *loger,
+       ChatUIinterface *chatUI) noexcept;
   bool establishConnection();
   void startReadingMessages();
   void openChat();
@@ -21,14 +23,11 @@ public:
 private:
   std::unique_ptr<MessSenderMangrInterface> m_messSender;
   std::unique_ptr<MessReciverMangrInterface> m_messReciver;
-  std::list<std::string> m_lastLogs;
-  ChatUI m_ui;
-  std::mutex m_logsMutex;
-  std::string m_name;
+  std::unique_ptr<LogerInterface> m_loger;
+  std::unique_ptr<ChatUIinterface> m_ui;
   MenuStatus m_menuStatus = MenuStatus::Menu;
   void optionSelect();
-  void addLog(const std::string &newLog);
-  void logsUpdate(const std::string log);
+  std::string logsUpdate(const std::string &mess);
   void sendNewMessage(const std::string &mess);
   bool tryAcceptUntilTimeout();
   bool tryConnectUntilTimeout();
