@@ -133,5 +133,5 @@ void Chat::openChat() {
 void Chat::endChat() {
   m_messSender->endConnection();
   m_messReciver->endConnection();
-  throw std::runtime_error("Temporary except for chat ending");
+  throw std::runtime_error("Chat ended by user");
 }

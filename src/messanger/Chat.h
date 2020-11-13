@@ -1,4 +1,5 @@
 #pragma once
+#include "ChatInterface.h"
 #include "ChatUIinterface.h"
 #include "LogerInterface.h"
 #include "MessReciverMangrInterface.h"
@@ -10,15 +11,15 @@
 #include <mutex>
 #include <string>
 
-class Chat {
+class Chat : public ChatInterface {
 public:
   Chat(MessSenderMangrInterface *messSender,
        MessReciverMangrInterface *messReciver, LogerInterface *loger,
        ChatUIinterface *chatUI, TimerInterface *timer) noexcept;
-  bool establishConnection();
-  void openChat();
-  void startReadingMessages();
-  void sendNewMessage(const std::string &mess);
+  bool establishConnection() override;
+  void openChat() override;
+  void startReadingMessages() override;
+  void sendNewMessage(const std::string &mess) override;
 
 private:
   std::unique_ptr<MessSenderMangrInterface> m_messSender;
