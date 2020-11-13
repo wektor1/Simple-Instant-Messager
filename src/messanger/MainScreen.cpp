@@ -37,6 +37,7 @@ void MainScreen::startApp() {
         exit = true;
         break;
       }
+      clearScreen();
     } catch (const std::exception &e) {
       clearScreen();
       std::cout << "Error: " << e.what() << "\n";
@@ -142,7 +143,8 @@ void MainScreen::openChat() {
     try {
       p1->openChat();
     } catch (const std::exception &e) {
-      std::cout << e.what() <<"\n";
+      clearScreen();
+      std::cout << e.what() << "\n";
     }
   }
 }
