@@ -11,10 +11,10 @@ using namespace std::chrono_literals;
 
 Chat::Chat(MessSenderMangrInterface *messSender,
            MessReciverMangrInterface *messReciver, LogerInterface *loger,
-           ChatUIinterface *chatUI) noexcept
+           ChatUIinterface *chatUI, TimerInterface *timer) noexcept
     : m_messSender(std::move(messSender)),
       m_messReciver(std::move(messReciver)), m_loger(std::move(loger)),
-      m_ui(std::move(chatUI)) {}
+      m_ui(std::move(chatUI)), m_timer(std::move(timer)) {}
 
 bool Chat::establishConnection() {
   auto reciverConnected =
@@ -29,13 +29,13 @@ bool Chat::establishConnection() {
 }
 
 bool Chat::tryUntilTimeout(std::function<bool()> conn) {
-  auto start_time = std::chrono::system_clock::now();
-  auto current_time = start_time;
-  while (current_time < start_time + 10s) {
+  auto currentTime = m_timer->currentTime();
+  auto finishTime = m_timer->finishTime(10s);
+  while (currentTime < finishTime) {
     auto result = conn();
     if (result)
       return true;
-    current_time = std::chrono::system_clock::now();
+    currentTime = m_timer->currentTime();
   }
   return false;
 }
@@ -110,7 +110,7 @@ void Chat::optionSelect() {
       break;
     case 2:
       sendNewMessage(">user quit<");
-      std::this_thread::sleep_for(1s);
+      m_timer->sleep(1s);
       endChat();
       break;
     }

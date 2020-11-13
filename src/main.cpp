@@ -4,6 +4,7 @@
 #include "MessageSendClient.h"
 #include "MessagesReciverManager.h"
 #include "MessagesSenderManager.h"
+#include "Timer.cpp"
 #include "ChatUI.h"
 #include "Loger.h"
 #include <cstdio>
@@ -17,12 +18,13 @@ std::unique_ptr<Chat> makeChat(std::string scndUserAddress, short readPort,
   MessageSendClient *messClt(
       new MessageSendClient(scndUserAddress, scndUserPort));
   MessagesReciverManager *recMgr(
-      new MessagesReciverManager(messServ, new MessageHandler()));
+      new MessagesReciverManager(messServ, new MessageHandler(), new Timer()));
   MessagesSenderManager *sendMgr(
-      new MessagesSenderManager(messClt, new MessageHandler()));
+      new MessagesSenderManager(messClt, new MessageHandler(), new Timer()));
   Loger *loger(new Loger(name));
   ChatUI *ui(new ChatUI());
-  return std::make_unique<Chat>(sendMgr, recMgr, loger, ui);
+  Timer *tmr(new Timer());
+  return std::make_unique<Chat>(sendMgr, recMgr, loger, ui, tmr);
 }
 
 int main(int argc, char **argv) {

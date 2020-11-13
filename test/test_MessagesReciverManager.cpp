@@ -2,21 +2,24 @@
 #include "MessagesReciverManager.h"
 #include "MockMessageHandlerInterface.h"
 #include "MockServerInterface.h"
+#include "MockTimerInterface.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <stdexcept>
 
 using ::testing::Return;
 using ::testing::StrictMock;
+using ::testing::NiceMock;
 
 TEST(MessagesReciverManagerTest, AssertConnectionWithProperData) {
   StrictMock<MockServerInterface> *servInt(new StrictMock<MockServerInterface>);
   StrictMock<MockMessageHandlerInterface> *msgHndl(
       new StrictMock<MockMessageHandlerInterface>);
+  NiceMock<MockTimerInterface> *tmr(new NiceMock<MockTimerInterface>);
 
   EXPECT_CALL(*servInt, acceptConnection()).Times(1);
 
-  MessagesReciverManager mgr(servInt, msgHndl);
+  MessagesReciverManager mgr(servInt, msgHndl, tmr);
   ASSERT_TRUE(mgr.acceptConnection());
 }
 
@@ -24,6 +27,7 @@ TEST(MessagesReciverManagerTest, AssertGiveLastMessageWaitsForMessage) {
   StrictMock<MockServerInterface> *servInt(new StrictMock<MockServerInterface>);
   StrictMock<MockMessageHandlerInterface> *msgHndl(
       new StrictMock<MockMessageHandlerInterface>);
+  NiceMock<MockTimerInterface> *tmr(new NiceMock<MockTimerInterface>);
 
   EXPECT_CALL(*msgHndl, messageInQueue())
       .Times(3)
@@ -36,7 +40,7 @@ TEST(MessagesReciverManagerTest, AssertGiveLastMessageWaitsForMessage) {
   EXPECT_CALL(*servInt, acceptConnection())
       .Times(1);
 
-  MessagesReciverManager mgr(servInt, msgHndl);
+  MessagesReciverManager mgr(servInt, msgHndl, tmr);
   mgr.acceptConnection();
   ASSERT_EQ(mgr.giveLastMessage(), "mess");
 }
@@ -45,8 +49,9 @@ TEST(MessagesReciverManagerTest, AssertConinuousReadThrowIfConnectionLost) {
   StrictMock<MockServerInterface> *servInt(new StrictMock<MockServerInterface>);
   StrictMock<MockMessageHandlerInterface> *msgHndl(
       new StrictMock<MockMessageHandlerInterface>);
+  NiceMock<MockTimerInterface> *tmr(new NiceMock<MockTimerInterface>);
 
   EXPECT_CALL(*servInt, read()).Times(1);
-  MessagesReciverManager mgr(servInt, msgHndl);
+  MessagesReciverManager mgr(servInt, msgHndl, tmr);
   ASSERT_THROW(mgr.continuousBufferRead(), std::runtime_error);
 }

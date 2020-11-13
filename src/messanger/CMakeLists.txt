@@ -16,4 +16,4 @@ target_include_directories(Messanger-includes INTERFACE ${CMAKE_CURRENT_SOURCE_D
 
 add_library(Messanger-lib ${messanger_headers} ${messanger_sources})
 target_include_directories(Messanger-lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(Messanger-lib PUBLIC Messanger-includes Managers-includes Comunication-includes)
+target_link_libraries(Messanger-lib PUBLIC Timer-includes Messanger-includes Managers-includes Comunication-includes)

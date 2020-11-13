@@ -15,4 +15,4 @@ add_executable(${PROJECT_NAME}-ut ${test_sources})
 
 target_include_directories(${PROJECT_NAME}-ut PUBLIC  ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(${PROJECT_NAME}-ut gtest_main gmock_main
-                      Handlers-lib Comunication-includes Managers-lib Mocks-lib Messanger-lib)
+                      Handlers-lib Comunication-includes Managers-lib Mocks-lib Messanger-lib Timer-includes)

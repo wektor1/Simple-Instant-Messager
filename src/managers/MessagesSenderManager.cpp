@@ -7,10 +7,10 @@
 using namespace std::chrono_literals;
 
 MessagesSenderManager::MessagesSenderManager(
-    ClientInterface *messageSender,
-    MessageHandlerInterface *messageHandler) noexcept
+    ClientInterface *messageSender, MessageHandlerInterface *messageHandler,
+    TimerInterface *timer) noexcept
     : m_messageSender(std::move(messageSender)),
-      m_messageHandler(std::move(messageHandler)), m_connectionValid(false) {}
+      m_messageHandler(std::move(messageHandler)), m_connectionValid(false), m_timer(std::move(timer)) {}
 
 bool MessagesSenderManager::beginConnection() {
   try {
@@ -44,7 +44,7 @@ void MessagesSenderManager::continuousMessageSending() {
       break;
     }
     m_messHandlerMutex.unlock();
-    std::this_thread::sleep_for(2s);
+    m_timer->sleep(2s);
   }
 }
 
