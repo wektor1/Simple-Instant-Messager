@@ -18,6 +18,7 @@ public:
   bool establishConnection();
   void openChat();
   void startReadingMessages();
+  void sendNewMessage(const std::string &mess);
 
 private:
   std::unique_ptr<MessSenderMangrInterface> m_messSender;
@@ -26,15 +27,14 @@ private:
   std::unique_ptr<ChatUIinterface> m_ui;
   std::unique_ptr<TimerInterface> m_timer;
   MenuStatus m_menuStatus = MenuStatus::Menu;
-  void optionSelect();
-  std::string logsUpdate(const std::string &mess);
-  void sendNewMessage(const std::string &mess);
+  void logsUpdate();
   bool tryUntilTimeout(std::function<bool()> conn);
   bool tryAcceptConnection();
   bool tryBeginConnection();
   void readUntilDisconnected();
   void chatMenuLoop();
   void messageCreation();
+  void optionSelect();
   void endChat();
   void drawUI();
 };

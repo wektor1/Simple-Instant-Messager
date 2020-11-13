@@ -60,22 +60,23 @@ void Chat::startReadingMessages() {
   try {
     while (true) {
       std::string newMessage = m_messReciver->giveLastMessage();
-      logsUpdate(newMessage);
+      m_loger->addLog(newMessage);
+      logsUpdate();
     }
   } catch (const std::exception &e) {
     readBuff.get();
   }
 }
 
-std::string Chat::logsUpdate(const std::string &mess) {
-  auto log = m_loger->makeLog(mess);
+void Chat::logsUpdate() {
   m_ui->setLastLogs(m_loger->getLogs());
-  return log;
+  drawUI();
 }
 
 void Chat::sendNewMessage(const std::string &mess) {
-  m_messSender->createNewMessage(logsUpdate(mess));
-  drawUI();
+  auto snedingMessage = m_loger->makeSendLog(mess);
+  m_messSender->createNewMessage(snedingMessage);
+  logsUpdate();
 }
 
 void Chat::messageCreation() {

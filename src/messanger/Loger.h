@@ -7,7 +7,8 @@
 class Loger : public LogerInterface {
 public:
   Loger(const std::string &name);
-  std::string makeLog(const std::string &mess) override;
+  std::string makeSendLog(const std::string &mess) override;
+  void addLog(const std::string &mess) override;
   std::list<std::string>& getLogs() override;
 private:
   std::string m_username;

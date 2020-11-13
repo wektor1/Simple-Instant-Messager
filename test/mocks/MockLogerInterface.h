@@ -6,6 +6,7 @@
 
 class MockLogerInterface : public LogerInterface {
 public:
-  MOCK_METHOD(std::string, makeLog, (const std::string &mess), (override));
+  MOCK_METHOD(std::string, makeSendLog, (const std::string &mess), (override));
+  MOCK_METHOD(void, addLog, (const std::string &mess), (override));
   MOCK_METHOD(std::list<std::string>&, getLogs, (), (override));
 };
