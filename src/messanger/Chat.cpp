@@ -23,9 +23,9 @@ bool Chat::establishConnection() {
   auto senderConnected =
       std::async(std::launch::async, &Chat::tryUntilTimeout, this,
                  std::bind(&Chat::tryBeginConnection, this));
-  if (reciverConnected.get() && senderConnected.get())
-    return true;
-  return false;
+  if (!senderConnected.get() || !reciverConnected.get())
+    return false;
+  return true;;
 }
 
 bool Chat::tryUntilTimeout(std::function<bool()> conn) {

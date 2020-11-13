@@ -27,9 +27,11 @@ void MainScreen::startApp() {
       switch (option) {
       case 1:
         configFromFile();
+        openChat();
         break;
       case 2:
         configFromInput();
+        openChat();
         break;
       case 3:
         exit = true;
@@ -58,7 +60,7 @@ void MainScreen::configFromFile() {
   if (std::filesystem::exists(dir) && std::filesystem::exists(file) &&
       std::filesystem::is_regular_file(file)) {
     std::ifstream config;
-    config.open(file);
+    config.open(file.string());
     readFile(config);
     config.close();
   } else {
@@ -88,7 +90,7 @@ short MainScreen::inputValidator(const std::string &errMess) {
     toInt = std::stoi(input);
 
   } catch (const std::invalid_argument &e) {
-    throw std::invalid_argument("Bad port typed");
+    throw std::invalid_argument(errMess);
   }
   return toInt;
 }
@@ -113,15 +115,15 @@ void MainScreen::configToFile() {
     if (std::filesystem::exists(file) &&
         std::filesystem::is_regular_file(file)) {
       std::ofstream config;
-      config.open(file, std::ofstream::trunc);
+      config.open(file.string(), std::ofstream::trunc);
       writeToFile(config);
       config.close();
     } else {
-      std::ofstream(file);
+      std::ofstream(file.string());
     }
   } else {
     std::filesystem::create_directory(dir);
-    std::ofstream(file);
+    std::ofstream(file.string());
   }
 }
 
@@ -140,7 +142,7 @@ void MainScreen::openChat() {
     try {
       p1->openChat();
     } catch (const std::exception &e) {
-      std::cout << e.what();
+      std::cout << e.what() <<"\n";
     }
   }
 }
