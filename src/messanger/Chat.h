@@ -6,6 +6,8 @@
 #include "MessSenderMangrInterface.h"
 #include "TimerInterface.h"
 #include <functional>
+#include <condition_variable>
+#include <atomic>
 #include <list>
 #include <memory>
 #include <mutex>
@@ -28,10 +30,12 @@ private:
   std::unique_ptr<ChatUIinterface> m_ui;
   std::unique_ptr<TimerInterface> m_timer;
   MenuStatus m_menuStatus = MenuStatus::Menu;
+  std::mutex m_connectionMutex;
+  std::condition_variable m_connectionCondition;
+  std::atomic_bool connectionMade;
   void logsUpdate();
-  bool tryUntilTimeout(std::function<bool()> conn);
-  bool tryAcceptConnection();
-  bool tryBeginConnection();
+  void cancelConnection();
+  void tryUntilTimeout();
   void readUntilDisconnected();
   void chatMenuLoop();
   void messageCreation();

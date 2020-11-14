@@ -2,6 +2,7 @@
 #include "ComunicationExceptions.h"
 #include <algorithm>
 #include <chrono>
+#include <cstdio>
 #include <enumMenuStatus.h>
 #include <future>
 #include <iostream>
@@ -17,32 +18,38 @@ Chat::Chat(MessSenderMangrInterface *messSender,
       m_ui(std::move(chatUI)), m_timer(std::move(timer)) {}
 
 bool Chat::establishConnection() {
-  auto reciverConnected =
-      std::async(std::launch::async, &Chat::tryUntilTimeout, this,
-                 std::bind(&Chat::tryAcceptConnection, this));
-  auto senderConnected =
-      std::async(std::launch::async, &Chat::tryUntilTimeout, this,
-                 std::bind(&Chat::tryBeginConnection, this));
-  if (reciverConnected.get() && senderConnected.get())
-    return true;
-  return false;
+  connectionMade.store(false);
+  std::thread connection(&Chat::tryUntilTimeout, this);
+  auto connHandle = connection.native_handle();
+  connection.detach();
+  std::thread cancelation(&Chat::cancelConnection, this);
+  auto cancelHandle = cancelation.native_handle();
+  cancelation.detach();
+  std::unique_lock<std::mutex> connectionLock(m_connectionMutex);
+  m_connectionCondition.wait(connectionLock);
+  pthread_cancel(connHandle);
+  pthread_cancel(cancelHandle);
+  return connectionMade.load();
 }
 
-bool Chat::tryUntilTimeout(std::function<bool()> conn) {
-  auto currentTime = m_timer->currentTime();
-  auto finishTime = m_timer->finishTime(10s);
-  while (currentTime < finishTime) {
-    auto result = conn();
-    if (result)
-      return true;
-    currentTime = m_timer->currentTime();
+void Chat::cancelConnection() {
+  std::cout << "Press any key to cancel\n";
+  getchar();
+  m_connectionCondition.notify_all();
+}
+
+void Chat::tryUntilTimeout() {
+  auto reciverConnected = std::async(
+      std::launch::async, &MessReciverMangrInterface::acceptConnection,
+      m_messReciver.get());
+  bool senderConnected = false;
+  while (!senderConnected) {
+    senderConnected = m_messSender->beginConnection();
   }
-  return false;
+  reciverConnected.wait();
+  connectionMade.store(true);
+  m_connectionCondition.notify_all();
 }
-
-bool Chat::tryAcceptConnection() { return m_messReciver->acceptConnection(); }
-
-bool Chat::tryBeginConnection() { return m_messSender->beginConnection(); }
 
 void Chat::readUntilDisconnected() {
   try {
