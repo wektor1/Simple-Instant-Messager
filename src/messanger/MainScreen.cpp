@@ -27,29 +27,36 @@ void MainScreen::startApp() {
       switch (option) {
       case 1:
         configFromFile();
-        openChat();
         break;
       case 2:
         configFromInput();
-        openChat();
         break;
       case 3:
+        openChat();
+        exit = true;
+        break;
+      case 4:
         exit = true;
         break;
       }
-      clearScreen();
     } catch (const std::exception &e) {
-      clearScreen();
-      std::cout << "Error: " << e.what() << "\n";
+      showStatusInfo("ERROR :", e.what());
     }
   }
 }
 
+void MainScreen::showStatusInfo(const std::string &statusType,
+                                const std::string &statusMessage) {
+  clearScreen();
+  std::cout << statusType << statusMessage << "\n";
+}
+
 void MainScreen::showOptions() {
-  std::cout << "Select config type:\n"
-            << "1-Last chat(load from file)\n"
+  std::cout << "Select operation:\n"
+            << "1-Load data from file (last input data)\n"
             << "2-Enter new data\n"
-            << "3-Close aplication\n"
+            << "3-Begin chat\n"
+            << "4-Close aplication\n"
             << "Type: ";
 }
 
@@ -67,6 +74,7 @@ void MainScreen::configFromFile() {
   } else {
     throw std::invalid_argument("This is first use");
   }
+  showStatusInfo("Status :", "Loading from file finished");
 }
 
 void MainScreen::readFile(std::ifstream &file) {
@@ -107,6 +115,7 @@ void MainScreen::configFromInput() {
   std::cout << "Type your destination port:\n";
   m_destinationPort = inputValidator("Bad port typed");
   configToFile();
+  showStatusInfo("Status :", "Data from input saved");
 }
 
 void MainScreen::configToFile() {

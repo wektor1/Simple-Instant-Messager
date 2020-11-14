@@ -1,8 +1,8 @@
 #pragma once
-#include <fstream>
-#include <string>
-#include <memory>
 #include "Chat.h"
+#include <fstream>
+#include <memory>
+#include <string>
 
 class MainScreen {
 public:
@@ -25,4 +25,6 @@ private:
   std::unique_ptr<Chat> makeChat(std::string scndUserAddress, short readPort,
                                  short scndUserPort, std::string name);
   void writeToFile(std::ofstream &file);
+  void showStatusInfo(const std::string &statusType,
+                      const std::string &statusMessage);
 };
