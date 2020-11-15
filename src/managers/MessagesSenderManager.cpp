@@ -1,16 +1,12 @@
 #include "MessagesSenderManager.h"
-#include <chrono>
 #include <exception>
 #include <string>
 #include <thread>
 
-using namespace std::chrono_literals;
-
 MessagesSenderManager::MessagesSenderManager(
-    ClientInterface *messageSender, MessageHandlerInterface *messageHandler,
-    TimerInterface *timer) noexcept
+    ClientInterface *messageSender, MessageHandlerInterface *messageHandler) noexcept
     : m_messageSender(std::move(messageSender)),
-      m_messageHandler(std::move(messageHandler)), m_connectionValid(false), m_timer(std::move(timer)) {}
+      m_messageHandler(std::move(messageHandler)), m_connectionValid(false) {}
 
 bool MessagesSenderManager::beginConnection() {
   try {
@@ -26,25 +22,26 @@ bool MessagesSenderManager::beginConnection() {
 void MessagesSenderManager::endConnection() {
   std::lock_guard<std::mutex> lockQueue(m_messHandlerMutex);
   m_connectionValid = false;
+  m_conditionInQueue.notify_one();
 }
 
 void MessagesSenderManager::createNewMessage(const std::string mess) {
   std::lock_guard<std::mutex> lockQueue(m_messHandlerMutex);
   m_messageHandler->messageToQueue(mess);
+  m_conditionInQueue.notify_one();
 }
 
 void MessagesSenderManager::continuousMessageSending() {
+  std::unique_lock<std::mutex> queueLock(m_messHandlerMutex);
   while (true) {
-    m_messHandlerMutex.lock();
-    if (m_messageHandler->messageInQueue()) {
-      sendMessageInQueue();
-    } else if (!m_connectionValid) {
+    m_conditionInQueue.wait(queueLock);
+    if (!m_connectionValid) {
       m_messHandlerMutex.unlock();
       m_messageSender->disconnect();
       break;
     }
     m_messHandlerMutex.unlock();
-    m_timer->sleep(2s);
+    sendMessageInQueue();
   }
 }
 

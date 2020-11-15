@@ -1,16 +1,11 @@
 #include "MessagesReciverManager.h"
-#include <chrono>
 #include <exception>
 #include <thread>
 
-using namespace std::chrono_literals;
-
 MessagesReciverManager::MessagesReciverManager(
-    ServerInterface *messageReciver, MessageHandlerInterface *messageHandler,
-    TimerInterface *timer) noexcept
+    ServerInterface *messageReciver, MessageHandlerInterface *messageHandler) noexcept
     : m_messageReciver(std::move(messageReciver)),
-      m_messageHandler(std::move(messageHandler)), m_connectionValid(false),
-      m_timer(std::move(timer)) {}
+      m_messageHandler(std::move(messageHandler)), m_connectionValid(false) {}
 
 bool MessagesReciverManager::acceptConnection() {
   try {
@@ -26,21 +21,19 @@ bool MessagesReciverManager::acceptConnection() {
 void MessagesReciverManager::endConnection() {
   std::lock_guard<std::mutex> lockQueue(m_messHandlerMutex);
   m_connectionValid = false;
+  m_conditionInQueue.notify_one();
 }
 
 std::string MessagesReciverManager::giveLastMessage() {
-  while (true) {
-    if (m_messageHandler->messageInQueue()) {
-      std::string temp = m_messageHandler->takeMessageFromQueue();
-      return temp;
-    }
-    m_messHandlerMutex.lock();
-    if (!m_connectionValid) {
-      m_messHandlerMutex.unlock();
-      throw std::runtime_error("Ended reading messages");
-    }
-    m_messHandlerMutex.unlock();
+  std::unique_lock<std::mutex> queueLock(m_messHandlerMutex);
+  m_conditionInQueue.wait(queueLock);
+  if (!m_connectionValid) {
+    queueLock.unlock();
+    throw std::runtime_error("Ended reading messages");
   }
+  queueLock.unlock();
+  std::string temp = m_messageHandler->takeMessageFromQueue();
+  return temp;
 }
 
 void MessagesReciverManager::continuousBufferRead() {
@@ -54,5 +47,6 @@ void MessagesReciverManager::continuousBufferRead() {
     }
     m_messageHandler->messageToQueue(mess);
     m_messHandlerMutex.unlock();
+    m_conditionInQueue.notify_one();
   }
 }

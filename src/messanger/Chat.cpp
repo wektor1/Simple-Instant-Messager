@@ -1,21 +1,18 @@
 #include "Chat.h"
 #include "ComunicationExceptions.h"
 #include <algorithm>
-#include <chrono>
 #include <cstdio>
 #include <enumMenuStatus.h>
 #include <future>
 #include <iostream>
 #include <string>
 
-using namespace std::chrono_literals;
-
 Chat::Chat(MessSenderMangrInterface *messSender,
            MessReciverMangrInterface *messReciver, LogerInterface *loger,
-           ChatUIinterface *chatUI, TimerInterface *timer) noexcept
+           ChatUIinterface *chatUI) noexcept
     : m_messSender(std::move(messSender)),
       m_messReciver(std::move(messReciver)), m_loger(std::move(loger)),
-      m_ui(std::move(chatUI)), m_timer(std::move(timer)) {}
+      m_ui(std::move(chatUI)) {}
 
 bool Chat::establishConnection() {
   connectionMade.store(false);
@@ -118,7 +115,6 @@ void Chat::optionSelect() {
       break;
     case 2:
       sendNewMessage(">user quit<");
-      m_timer->sleep(1s);
       endChat();
       break;
     }
@@ -138,7 +134,7 @@ void Chat::openChat() {
 }
 
 void Chat::endChat() {
-  m_messSender->endConnection();
   m_messReciver->endConnection();
+  m_messSender->endConnection();
   throw std::runtime_error("Chat ended by user");
 }

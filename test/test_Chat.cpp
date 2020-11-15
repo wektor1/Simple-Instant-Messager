@@ -4,14 +4,10 @@
 #include "MockLogerInterface.h"
 #include "MockMessReciverMangrInterface.h"
 #include "MockMessSenderMangrInterface.h"
-#include "MockTimerInterface.h"
-#include <chrono>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <list>
 #include <string>
-
-using namespace std::chrono_literals;
 
 using ::testing::_;
 using ::testing::AtLeast;
@@ -28,15 +24,11 @@ TEST(ChatTest, AssertConnectionReturnTrueAtSucces) {
       new StrictMock<MockMessSenderMangrInterface>);
   StrictMock<MockChatUIinterface> *chtUI(new StrictMock<MockChatUIinterface>);
   StrictMock<MockLogerInterface> *logr(new StrictMock<MockLogerInterface>);
-  NiceMock<MockTimerInterface> *tmr(new NiceMock<MockTimerInterface>);
 
-  auto startTime = std::chrono::system_clock::now();
-  ON_CALL(*tmr, currentTime()).WillByDefault(Return(startTime));
-  ON_CALL(*tmr, finishTime(_)).WillByDefault(Return(startTime + 1s));
   EXPECT_CALL(*messRec, acceptConnection()).Times(1).WillOnce(Return(true));
   EXPECT_CALL(*messSend, beginConnection()).Times(1).WillOnce(Return(true));
 
-  Chat chat(messSend, messRec, logr, chtUI, tmr);
+  Chat chat(messSend, messRec, logr, chtUI);
   ASSERT_TRUE(chat.establishConnection());
 }
 
@@ -47,13 +39,7 @@ TEST(ChatTest, AssertConnectionReturnFalseAtFail) {
       new StrictMock<MockMessSenderMangrInterface>);
   StrictMock<MockChatUIinterface> *chtUI(new StrictMock<MockChatUIinterface>);
   StrictMock<MockLogerInterface> *logr(new StrictMock<MockLogerInterface>);
-  NiceMock<MockTimerInterface> *tmr(new NiceMock<MockTimerInterface>);
 
-  auto startTime = std::chrono::system_clock::now();
-  EXPECT_CALL(*tmr, currentTime())
-      .WillOnce(Return(startTime))
-      .WillRepeatedly(Return(startTime + 1s));
-  ON_CALL(*tmr, finishTime(_)).WillByDefault(Return(startTime + 1s));
   EXPECT_CALL(*messRec, acceptConnection())
       .Times(AtLeast(0))
       .WillRepeatedly(Return(true));
@@ -61,7 +47,7 @@ TEST(ChatTest, AssertConnectionReturnFalseAtFail) {
       .Times(AtLeast(1))
       .WillRepeatedly(Return(false));
 
-  Chat chat(messSend, messRec, logr, chtUI, tmr);
+  Chat chat(messSend, messRec, logr, chtUI);
   ASSERT_FALSE(chat.establishConnection());
 }
 
@@ -72,7 +58,6 @@ TEST(ChatTest, AssertReadingUntilThrowFromDisconnect) {
       new StrictMock<MockMessSenderMangrInterface>);
   StrictMock<MockChatUIinterface> *chtUI(new StrictMock<MockChatUIinterface>);
   StrictMock<MockLogerInterface> *logr(new StrictMock<MockLogerInterface>);
-  NiceMock<MockTimerInterface> *tmr(new NiceMock<MockTimerInterface>);
 
   EXPECT_CALL(*messRec, endConnection()).Times(1);
   EXPECT_CALL(*messSend, endConnection()).Times(1);
@@ -84,7 +69,7 @@ TEST(ChatTest, AssertReadingUntilThrowFromDisconnect) {
       .WillRepeatedly(Return("First"));
   EXPECT_CALL(*logr, addLog("First")).Times(AtLeast(1));
 
-  Chat chat(messSend, messRec, logr, chtUI, tmr);
+  Chat chat(messSend, messRec, logr, chtUI);
 
   ASSERT_THROW(chat.startReadingMessages(), std::runtime_error);
 }
@@ -96,7 +81,6 @@ TEST(ChatTest, AssertSendNewMessLogsAndSends) {
       new StrictMock<MockMessSenderMangrInterface>);
   StrictMock<MockChatUIinterface> *chtUI(new StrictMock<MockChatUIinterface>);
   StrictMock<MockLogerInterface> *logr(new StrictMock<MockLogerInterface>);
-  NiceMock<MockTimerInterface> *tmr(new NiceMock<MockTimerInterface>);
 
   EXPECT_CALL(*logr, makeSendLog("Test mess"))
       .Times(1)
@@ -107,6 +91,6 @@ TEST(ChatTest, AssertSendNewMessLogsAndSends) {
   EXPECT_CALL(*chtUI, setLastLogs(_)).Times(1);
   EXPECT_CALL(*chtUI, draw()).Times(1);
 
-  Chat chat(messSend, messRec, logr, chtUI, tmr);
+  Chat chat(messSend, messRec, logr, chtUI);
   chat.sendNewMessage("Test mess");
 }

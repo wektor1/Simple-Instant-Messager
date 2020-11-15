@@ -1,7 +1,6 @@
 #include "MessagesSenderManager.h"
 #include "MockClientInterface.h"
 #include "MockMessageHandlerInterface.h"
-#include "MockTimerInterface.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -14,11 +13,10 @@ TEST(MessagesSenderManagerTest, AssertCorrectQueuingMessages) {
   StrictMock<MockClientInterface> *cltInt(new StrictMock<MockClientInterface>);
   StrictMock<MockMessageHandlerInterface> *msgHndl(
       new StrictMock<MockMessageHandlerInterface>);
-  NiceMock<MockTimerInterface> *tmr(new NiceMock<MockTimerInterface>);
 
   EXPECT_CALL(*msgHndl, messageToQueue("New message")).Times(1);
 
-  MessagesSenderManager mgr(cltInt, msgHndl, tmr);
+  MessagesSenderManager mgr(cltInt, msgHndl);
   mgr.createNewMessage("New message");
 }
 
@@ -26,11 +24,10 @@ TEST(MessagesSenderManagerTest, AssertCorrectConnecion) {
   StrictMock<MockClientInterface> *cltInt(new StrictMock<MockClientInterface>);
   StrictMock<MockMessageHandlerInterface> *msgHndl(
       new StrictMock<MockMessageHandlerInterface>);
-  NiceMock<MockTimerInterface> *tmr(new NiceMock<MockTimerInterface>);
 
   EXPECT_CALL(*cltInt, connect()).Times(1);
 
-  MessagesSenderManager mgr(cltInt, msgHndl, tmr);
+  MessagesSenderManager mgr(cltInt, msgHndl);
   ASSERT_TRUE(mgr.beginConnection());
 }
 
@@ -39,11 +36,10 @@ TEST(MessagesSenderManagerTest,
   StrictMock<MockClientInterface> *cltInt(new StrictMock<MockClientInterface>);
   StrictMock<MockMessageHandlerInterface> *msgHndl(
       new StrictMock<MockMessageHandlerInterface>);
-  NiceMock<MockTimerInterface> *tmr(new NiceMock<MockTimerInterface>);
 
   EXPECT_CALL(*msgHndl, messageInQueue()).Times(1);
   EXPECT_CALL(*cltInt, disconnect()).Times(1);
 
-  MessagesSenderManager mgr(cltInt, msgHndl, tmr);
+  MessagesSenderManager mgr(cltInt, msgHndl);
   mgr.continuousMessageSending();
 }

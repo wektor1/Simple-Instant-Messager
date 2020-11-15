@@ -4,7 +4,6 @@
 #include "LogerInterface.h"
 #include "MessReciverMangrInterface.h"
 #include "MessSenderMangrInterface.h"
-#include "TimerInterface.h"
 #include <functional>
 #include <condition_variable>
 #include <atomic>
@@ -17,7 +16,7 @@ class Chat : public ChatInterface {
 public:
   Chat(MessSenderMangrInterface *messSender,
        MessReciverMangrInterface *messReciver, LogerInterface *loger,
-       ChatUIinterface *chatUI, TimerInterface *timer) noexcept;
+       ChatUIinterface *chatUI) noexcept;
   bool establishConnection() override;
   void openChat() override;
   void startReadingMessages() override;
@@ -28,7 +27,6 @@ private:
   std::unique_ptr<MessReciverMangrInterface> m_messReciver;
   std::unique_ptr<LogerInterface> m_loger;
   std::unique_ptr<ChatUIinterface> m_ui;
-  std::unique_ptr<TimerInterface> m_timer;
   MenuStatus m_menuStatus = MenuStatus::Menu;
   std::mutex m_connectionMutex;
   std::condition_variable m_connectionCondition;

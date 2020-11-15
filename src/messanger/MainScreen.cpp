@@ -7,7 +7,6 @@
 #include "MessageSendClient.h"
 #include "MessagesReciverManager.h"
 #include "MessagesSenderManager.h"
-#include "Timer.cpp"
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -165,11 +164,10 @@ std::unique_ptr<Chat> MainScreen::makeChat(std::string scndUserAddress,
   MessageSendClient *messClt(
       new MessageSendClient(scndUserAddress, scndUserPort));
   MessagesReciverManager *recMgr(
-      new MessagesReciverManager(messServ, new MessageHandler(), new Timer()));
+      new MessagesReciverManager(messServ, new MessageHandler()));
   MessagesSenderManager *sendMgr(
-      new MessagesSenderManager(messClt, new MessageHandler(), new Timer()));
+      new MessagesSenderManager(messClt, new MessageHandler()));
   Loger *loger(new Loger(name));
   ChatUI *ui(new ChatUI());
-  Timer *tmr(new Timer());
-  return std::make_unique<Chat>(sendMgr, recMgr, loger, ui, tmr);
+  return std::make_unique<Chat>(sendMgr, recMgr, loger, ui);
 }
