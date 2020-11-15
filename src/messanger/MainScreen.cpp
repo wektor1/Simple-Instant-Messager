@@ -144,8 +144,13 @@ void MainScreen::writeToFile(std::ofstream &file) {
 }
 
 void MainScreen::openChat() {
-  std::unique_ptr<Chat> p1 =
-      makeChat(m_scndUserAddress, m_readPort, m_destinationPort, m_name);
+  std::unique_ptr<ChatInterface> p1(
+      makeChat(makeMessSenderManager(
+                   makeMessageSendClient(m_scndUserAddress, m_destinationPort),
+                   makeMessageHandler()),
+               makeMessReciverManager(makeMessageReciveServer(m_readPort),
+                                      makeMessageHandler()),
+               makeLoger(m_name), makeChatUI()));
   if (p1->establishConnection()) {
     std::cout << "Connected";
     try {
@@ -155,19 +160,4 @@ void MainScreen::openChat() {
       std::cout << e.what() << "\n";
     }
   }
-}
-
-std::unique_ptr<Chat> MainScreen::makeChat(std::string scndUserAddress,
-                                           short readPort, short scndUserPort,
-                                           std::string name) {
-  MessageReciveServer *messServ(new MessageReciveServer(readPort));
-  MessageSendClient *messClt(
-      new MessageSendClient(scndUserAddress, scndUserPort));
-  MessagesReciverManager *recMgr(
-      new MessagesReciverManager(messServ, new MessageHandler()));
-  MessagesSenderManager *sendMgr(
-      new MessagesSenderManager(messClt, new MessageHandler()));
-  Loger *loger(new Loger(name));
-  ChatUI *ui(new ChatUI());
-  return std::make_unique<Chat>(sendMgr, recMgr, loger, ui);
 }

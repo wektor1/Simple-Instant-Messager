@@ -4,7 +4,8 @@
 #include <thread>
 
 MessagesSenderManager::MessagesSenderManager(
-    ClientInterface *messageSender, MessageHandlerInterface *messageHandler) noexcept
+    std::unique_ptr<ClientInterface> &&messageSender,
+    std::unique_ptr<MessageHandlerInterface> &&messageHandler) noexcept
     : m_messageSender(std::move(messageSender)),
       m_messageHandler(std::move(messageHandler)), m_connectionValid(false) {}
 
@@ -47,4 +48,11 @@ void MessagesSenderManager::continuousMessageSending() {
 
 void MessagesSenderManager::sendMessageInQueue() {
   m_messageSender->send(m_messageHandler->takeMessageFromQueue());
+}
+
+std::unique_ptr<MessSenderMangrInterface> makeMessSenderManager(
+    std::unique_ptr<ClientInterface> &&messageSender,
+    std::unique_ptr<MessageHandlerInterface> &&messageHandler) {
+  return std::make_unique<MessagesSenderManager>(std::move(messageSender),
+                                                    std::move(messageHandler));
 }

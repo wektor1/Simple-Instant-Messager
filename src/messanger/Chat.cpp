@@ -7,9 +7,10 @@
 #include <iostream>
 #include <string>
 
-Chat::Chat(MessSenderMangrInterface *messSender,
-           MessReciverMangrInterface *messReciver, LogerInterface *loger,
-           ChatUIinterface *chatUI) noexcept
+Chat::Chat(std::unique_ptr<MessSenderMangrInterface> &&messSender,
+           std::unique_ptr<MessReciverMangrInterface> &&messReciver,
+           std::unique_ptr<LogerInterface> &&loger,
+           std::unique_ptr<ChatUIinterface> &&chatUI) noexcept
     : m_messSender(std::move(messSender)),
       m_messReciver(std::move(messReciver)), m_loger(std::move(loger)),
       m_ui(std::move(chatUI)) {}
@@ -137,4 +138,13 @@ void Chat::endChat() {
   m_messReciver->endConnection();
   m_messSender->endConnection();
   throw std::runtime_error("Chat ended by user");
+}
+
+std::unique_ptr<ChatInterface>
+makeChat(std::unique_ptr<MessSenderMangrInterface> &&messSender,
+         std::unique_ptr<MessReciverMangrInterface> &&messReciver,
+         std::unique_ptr<LogerInterface> &&loger,
+         std::unique_ptr<ChatUIinterface> &&chatUI) {
+  return std::make_unique<Chat>(std::move(messSender), std::move(messReciver),
+                                std::move(loger), std::move(chatUI));
 }

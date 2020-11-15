@@ -8,8 +8,8 @@
 
 class MessagesReciverManager : public MessReciverMangrInterface {
 public:
-  MessagesReciverManager(ServerInterface *messageSender,
-                         MessageHandlerInterface *messageHandler) noexcept;
+  MessagesReciverManager(std::unique_ptr<ServerInterface> &&messageReciver,
+                         std::unique_ptr<MessageHandlerInterface> &&messageHandler) noexcept;
   bool acceptConnection() override;
   void continuousBufferRead() override;
   void endConnection() override;

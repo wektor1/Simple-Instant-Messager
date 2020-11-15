@@ -3,7 +3,8 @@
 #include <thread>
 
 MessagesReciverManager::MessagesReciverManager(
-    ServerInterface *messageReciver, MessageHandlerInterface *messageHandler) noexcept
+    std::unique_ptr<ServerInterface> &&messageReciver,
+    std::unique_ptr<MessageHandlerInterface> &&messageHandler) noexcept
     : m_messageReciver(std::move(messageReciver)),
       m_messageHandler(std::move(messageHandler)), m_connectionValid(false) {}
 
@@ -49,4 +50,11 @@ void MessagesReciverManager::continuousBufferRead() {
     m_messHandlerMutex.unlock();
     m_conditionInQueue.notify_one();
   }
+}
+
+std::unique_ptr<MessReciverMangrInterface> makeMessReciverManager(
+    std::unique_ptr<ServerInterface> &&messageReciver,
+    std::unique_ptr<MessageHandlerInterface> &&messageHandler) {
+  return std::make_unique<MessagesReciverManager>(std::move(messageReciver),
+                                                  std::move(messageHandler));
 }

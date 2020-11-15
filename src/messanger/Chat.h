@@ -4,9 +4,9 @@
 #include "LogerInterface.h"
 #include "MessReciverMangrInterface.h"
 #include "MessSenderMangrInterface.h"
-#include <functional>
-#include <condition_variable>
 #include <atomic>
+#include <condition_variable>
+#include <functional>
 #include <list>
 #include <memory>
 #include <mutex>
@@ -14,9 +14,10 @@
 
 class Chat : public ChatInterface {
 public:
-  Chat(MessSenderMangrInterface *messSender,
-       MessReciverMangrInterface *messReciver, LogerInterface *loger,
-       ChatUIinterface *chatUI) noexcept;
+  Chat(std::unique_ptr<MessSenderMangrInterface> &&messSender,
+       std::unique_ptr<MessReciverMangrInterface> &&messReciver,
+       std::unique_ptr<LogerInterface> &&loger,
+       std::unique_ptr<ChatUIinterface> &&chatUI) noexcept;
   bool establishConnection() override;
   void openChat() override;
   void startReadingMessages() override;

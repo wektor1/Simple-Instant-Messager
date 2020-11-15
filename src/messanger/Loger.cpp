@@ -19,3 +19,7 @@ std::list<std::string> &Loger::getLogs() {
   std::lock_guard<std::mutex> logsLock(m_logsMutex);
   return m_lastLogs;
 }
+
+std::unique_ptr<LogerInterface> makeLoger(const std::string &name) {
+  return std::make_unique<Loger>(name);
+}

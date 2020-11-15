@@ -30,3 +30,7 @@ std::string MessageReciveServer::getMessage() {
   std::string data = boost::asio::buffer_cast<const char *>(buffer.data());
   return data.substr(0, len - 1);
 }
+
+std::unique_ptr<ServerInterface> makeMessageReciveServer(const short &readPort) {
+  return std::make_unique<MessageReciveServer>(readPort);
+}

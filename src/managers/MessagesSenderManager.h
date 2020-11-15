@@ -8,8 +8,9 @@
 
 class MessagesSenderManager : public MessSenderMangrInterface {
 public:
-  MessagesSenderManager(ClientInterface *messageSender,
-                        MessageHandlerInterface *messageHandler) noexcept;
+  MessagesSenderManager(
+      std::unique_ptr<ClientInterface> &&messageSender,
+      std::unique_ptr<MessageHandlerInterface> &&messageHandler) noexcept;
   bool beginConnection() override;
   void endConnection() override;
   void createNewMessage(const std::string mess) override;

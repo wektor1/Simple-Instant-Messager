@@ -22,3 +22,9 @@ void MessageSendClient::sendMessage(const boost::asio::const_buffer &buff) {
 void MessageSendClient::disconnect() {
   send(STOP_CODE);
 }
+
+std::unique_ptr<ClientInterface>
+makeMessageSendClient(const std::string &hostAddress, const short &hostPort){
+  return std::make_unique<MessageSendClient>(hostAddress, hostPort);
+}
+

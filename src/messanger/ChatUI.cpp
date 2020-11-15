@@ -68,3 +68,7 @@ void ChatUI::prepareBorder(std::ostringstream &screen) {
   }
   screen << std::endl;
 }
+
+std::unique_ptr<ChatUIinterface> makeChatUI() {
+  return std::make_unique<ChatUI>();
+}

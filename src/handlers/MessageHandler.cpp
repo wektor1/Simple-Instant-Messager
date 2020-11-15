@@ -7,3 +7,7 @@ void MessageHandler::messageToQueue(const std::string mess) {
 }
 
 std::string MessageHandler::takeMessageFromQueue() { return processFirst(); }
+
+std::unique_ptr<MessageHandlerInterface> makeMessageHandler(){
+  return std::make_unique<MessageHandler>();
+}
