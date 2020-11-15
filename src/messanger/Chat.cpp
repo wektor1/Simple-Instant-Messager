@@ -16,7 +16,7 @@ Chat::Chat(MessSenderMangrInterface *messSender,
 
 bool Chat::establishConnection() {
   connectionMade.store(false);
-  std::thread connection(&Chat::tryUntilTimeout, this);
+  std::thread connection(&Chat::connectionLoop, this);
   auto connHandle = connection.native_handle();
   connection.detach();
   std::thread cancelation(&Chat::cancelConnection, this);
@@ -35,7 +35,7 @@ void Chat::cancelConnection() {
   m_connectionCondition.notify_all();
 }
 
-void Chat::tryUntilTimeout() {
+void Chat::connectionLoop() {
   auto reciverConnected = std::async(
       std::launch::async, &MessReciverMangrInterface::acceptConnection,
       m_messReciver.get());

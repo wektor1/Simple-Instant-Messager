@@ -33,7 +33,7 @@ private:
   std::atomic_bool connectionMade;
   void logsUpdate();
   void cancelConnection();
-  void tryUntilTimeout();
+  void connectionLoop();
   void readUntilDisconnected();
   void chatMenuLoop();
   void messageCreation();

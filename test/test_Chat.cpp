@@ -17,14 +17,23 @@ using ::testing::ReturnRef;
 using ::testing::StrictMock;
 using ::testing::Throw;
 
-TEST(ChatTest, AssertConnectionReturnTrueAtSucces) {
-  StrictMock<MockMessReciverMangrInterface> *messRec(
-      new StrictMock<MockMessReciverMangrInterface>);
-  StrictMock<MockMessSenderMangrInterface> *messSend(
-      new StrictMock<MockMessSenderMangrInterface>);
-  StrictMock<MockChatUIinterface> *chtUI(new StrictMock<MockChatUIinterface>);
-  StrictMock<MockLogerInterface> *logr(new StrictMock<MockLogerInterface>);
+class ChatTest : public ::testing::Test {
+protected:
+  void SetUp() override {
+    messRec = new StrictMock<MockMessReciverMangrInterface>;
+    messSend = new StrictMock<MockMessSenderMangrInterface>;
+    chtUI = new StrictMock<MockChatUIinterface>;
+    logr = new StrictMock<MockLogerInterface>;
+  }
+  void TearDown() override {}
 
+  StrictMock<MockMessReciverMangrInterface> *messRec;
+  StrictMock<MockMessSenderMangrInterface> *messSend;
+  StrictMock<MockChatUIinterface> *chtUI;
+  StrictMock<MockLogerInterface> *logr;
+};
+
+TEST_F(ChatTest, AssertConnectionReturnTrueAtSucces) {
   EXPECT_CALL(*messRec, acceptConnection()).Times(1).WillOnce(Return(true));
   EXPECT_CALL(*messSend, beginConnection()).Times(1).WillOnce(Return(true));
 
@@ -32,33 +41,7 @@ TEST(ChatTest, AssertConnectionReturnTrueAtSucces) {
   ASSERT_TRUE(chat.establishConnection());
 }
 
-TEST(ChatTest, AssertConnectionReturnFalseAtFail) {
-  StrictMock<MockMessReciverMangrInterface> *messRec(
-      new StrictMock<MockMessReciverMangrInterface>);
-  StrictMock<MockMessSenderMangrInterface> *messSend(
-      new StrictMock<MockMessSenderMangrInterface>);
-  StrictMock<MockChatUIinterface> *chtUI(new StrictMock<MockChatUIinterface>);
-  StrictMock<MockLogerInterface> *logr(new StrictMock<MockLogerInterface>);
-
-  EXPECT_CALL(*messRec, acceptConnection())
-      .Times(AtLeast(0))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(*messSend, beginConnection())
-      .Times(AtLeast(1))
-      .WillRepeatedly(Return(false));
-
-  Chat chat(messSend, messRec, logr, chtUI);
-  ASSERT_FALSE(chat.establishConnection());
-}
-
-TEST(ChatTest, AssertReadingUntilThrowFromDisconnect) {
-  StrictMock<MockMessReciverMangrInterface> *messRec(
-      new StrictMock<MockMessReciverMangrInterface>);
-  StrictMock<MockMessSenderMangrInterface> *messSend(
-      new StrictMock<MockMessSenderMangrInterface>);
-  StrictMock<MockChatUIinterface> *chtUI(new StrictMock<MockChatUIinterface>);
-  StrictMock<MockLogerInterface> *logr(new StrictMock<MockLogerInterface>);
-
+TEST_F(ChatTest, AssertReadingUntilThrowFromDisconnect) {
   EXPECT_CALL(*messRec, endConnection()).Times(1);
   EXPECT_CALL(*messSend, endConnection()).Times(1);
   EXPECT_CALL(*messRec, continuousBufferRead())
@@ -74,14 +57,7 @@ TEST(ChatTest, AssertReadingUntilThrowFromDisconnect) {
   ASSERT_THROW(chat.startReadingMessages(), std::runtime_error);
 }
 
-TEST(ChatTest, AssertSendNewMessLogsAndSends) {
-  StrictMock<MockMessReciverMangrInterface> *messRec(
-      new StrictMock<MockMessReciverMangrInterface>);
-  StrictMock<MockMessSenderMangrInterface> *messSend(
-      new StrictMock<MockMessSenderMangrInterface>);
-  StrictMock<MockChatUIinterface> *chtUI(new StrictMock<MockChatUIinterface>);
-  StrictMock<MockLogerInterface> *logr(new StrictMock<MockLogerInterface>);
-
+TEST_F(ChatTest, AssertSendNewMessLogsAndSends) {
   EXPECT_CALL(*logr, makeSendLog("Test mess"))
       .Times(1)
       .WillOnce(Return("Host 1: Test mess"));
