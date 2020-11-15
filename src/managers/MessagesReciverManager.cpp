@@ -6,8 +6,8 @@
 using namespace std::chrono_literals;
 
 MessagesReciverManager::MessagesReciverManager(
-    ServerInterface *messageReciver,
-    MessageHandlerInterface *messageHandler, TimerInterface *timer) noexcept
+    ServerInterface *messageReciver, MessageHandlerInterface *messageHandler,
+    TimerInterface *timer) noexcept
     : m_messageReciver(std::move(messageReciver)),
       m_messageHandler(std::move(messageHandler)), m_connectionValid(false),
       m_timer(std::move(timer)) {}
@@ -30,17 +30,16 @@ void MessagesReciverManager::endConnection() {
 
 std::string MessagesReciverManager::giveLastMessage() {
   while (true) {
-    m_messHandlerMutex.lock();
     if (m_messageHandler->messageInQueue()) {
       std::string temp = m_messageHandler->takeMessageFromQueue();
-      m_messHandlerMutex.unlock();
       return temp;
-    } else if (!m_connectionValid) {
+    }
+    m_messHandlerMutex.lock();
+    if (!m_connectionValid) {
       m_messHandlerMutex.unlock();
-      throw std::runtime_error("Reading connection lost");
+      throw std::runtime_error("Ended reading messages");
     }
     m_messHandlerMutex.unlock();
-    m_timer->sleep(2s);
   }
 }
 
@@ -51,10 +50,9 @@ void MessagesReciverManager::continuousBufferRead() {
     m_messHandlerMutex.lock();
     if (!m_connectionValid) {
       m_messHandlerMutex.unlock();
-      throw std::runtime_error("Ended reading messages");
+      throw std::runtime_error("Ended buffer reading messages");
     }
     m_messageHandler->messageToQueue(mess);
     m_messHandlerMutex.unlock();
-    std::this_thread::sleep_for(2s);
   }
 }

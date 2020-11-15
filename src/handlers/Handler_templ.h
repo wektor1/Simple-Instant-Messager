@@ -2,6 +2,7 @@
 
 #include "HandlersExceptions.h"
 #include <queue>
+#include <mutex>
 
 template <typename T> class Handler {
 public:
@@ -11,5 +12,6 @@ public:
   T processFirst();
 
 private:
+  mutable std::mutex m_queueMutex;
   std::queue<T> m_queue;
 };

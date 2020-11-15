@@ -3,6 +3,7 @@
 #include "ServerInterface.h"
 #include "TimerInterface.h"
 #include <memory>
+#include <condition_variable>
 #include <mutex>
 #include <string>
 
@@ -20,6 +21,7 @@ private:
   std::unique_ptr<ServerInterface> m_messageReciver;
   std::unique_ptr<MessageHandlerInterface> m_messageHandler;
   std::unique_ptr<TimerInterface> m_timer;
+  std::condition_variable m_conditionInQueue;
   bool m_connectionValid;
   std::mutex m_messHandlerMutex;
 };
